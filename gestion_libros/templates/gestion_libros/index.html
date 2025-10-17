@@ -1,0 +1,122 @@
+{% extends 'gestion_libros/base.html' %}
+
+{% block title %}Inicio - Sistema de Biblioteca{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="bi bi-house-door"></i> Panel Principal
+        </h1>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0">Libros</h6>
+                        <h2 class="mb-0">{{ total_libros }}</h2>
+                    </div>
+                    <i class="bi bi-book fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0">Ejemplares</h6>
+                        <h2 class="mb-0">{{ total_ejemplares }}</h2>
+                    </div>
+                    <i class="bi bi-collection fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0">Socios Activos</h6>
+                        <h2 class="mb-0">{{ total_socios }}</h2>
+                    </div>
+                    <i class="bi bi-people fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title mb-0">Préstamos Activos</h6>
+                        <h2 class="mb-0">{{ prestamos_activos }}</h2>
+                    </div>
+                    <i class="bi bi-arrow-repeat fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones rápidas -->
+<div class="row">
+    <div class="col-12">
+        <h3 class="mb-3">
+            <i class="bi bi-lightning"></i> Acciones Rápidas
+        </h3>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-person-plus fs-1 text-primary mb-3"></i>
+                <h5 class="card-title">Registrar Socio</h5>
+                <p class="card-text">Dar de alta un nuevo socio en el sistema</p>
+                <a href="{% url 'registrar_socio' %}" class="btn btn-primary">
+                    <i class="bi bi-plus-circle"></i> Nuevo Socio
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-box-arrow-right fs-1 text-success mb-3"></i>
+                <h5 class="card-title">Realizar Préstamo</h5>
+                <p class="card-text">Prestar un libro a un socio</p>
+                <a href="{% url 'realizar_prestamo' %}" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Nuevo Préstamo
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="bi bi-arrow-left-right fs-1 text-info mb-3"></i>
+                <h5 class="card-title">Ver Préstamos</h5>
+                <p class="card-text">Consultar y gestionar préstamos activos</p>
+                <a href="{% url 'listar_prestamos' %}" class="btn btn-info text-white">
+                    <i class="bi bi-list"></i> Ver Préstamos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

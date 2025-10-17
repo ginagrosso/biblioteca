@@ -11,6 +11,8 @@ from .views import (
     realizar_prestamo,
     devolver_libro,
     registrar_socio,
+    registrar_libro,
+    registrar_ejemplar,
 )
 
 urlpatterns = [
@@ -21,6 +23,10 @@ urlpatterns = [
     path('libros/', listar_libros, name='listar_libros'),
     path('socios/', listar_socios, name='listar_socios'),
     path('prestamos/', listar_prestamos, name='listar_prestamos'),
+    
+    # Gestión de libros y ejemplares
+    path('libros/nuevo/', registrar_libro, name='registrar_libro'),
+    path('ejemplares/nuevo/', registrar_ejemplar, name='registrar_ejemplar'),
     
     # PROCESO 1: Préstamo de libros
     path('prestamos/nuevo/', realizar_prestamo, name='realizar_prestamo'),

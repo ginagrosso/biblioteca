@@ -1,0 +1,79 @@
+{% extends 'gestion_libros/base.html' %}
+
+{% block title %}Realizar Préstamo{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-box-arrow-right"></i> Realizar Préstamo
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{% url 'realizar_prestamo' %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="socio_id" class="form-label">Socio (DNI) *</label>
+                        <select class="form-select" id="socio_id" name="socio_id" required>
+                            <option value="">-- Seleccione un socio --</option>
+                            {% for socio in socios %}
+                            <option value="{{ socio.dni }}">
+                                {{ socio.nombre }} (DNI: {{ socio.dni }} - Nº: {{ socio.numero_socio }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="ejemplar_id" class="form-label">Ejemplar Disponible *</label>
+                        <select class="form-select" id="ejemplar_id" name="ejemplar_id" required>
+                            <option value="">-- Seleccione un ejemplar --</option>
+                            {% for ejemplar in ejemplares %}
+                            <option value="{{ ejemplar.codigo_ejemplar }}">
+                                {{ ejemplar.libro.titulo }} - {{ ejemplar.libro.autor }} (Código: {{ ejemplar.codigo_ejemplar }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
+                        <strong>Información:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>El préstamo se registrará con fecha de hoy</li>
+                            <li>La fecha de devolución será en 15 días</li>
+                            <li>El ejemplar quedará marcado como "prestado"</li>
+                        </ul>
+                    </div>
+                    
+                    {% if not socios %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        No hay socios activos. <a href="{% url 'registrar_socio' %}">Registrar socio</a>
+                    </div>
+                    {% endif %}
+                    
+                    {% if not ejemplares %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        No hay ejemplares disponibles. <a href="/admin/gestion_libros/ejemplar/add/" target="_blank">Agregar ejemplar</a>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'listar_prestamos' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success" {% if not socios or not ejemplares %}disabled{% endif %}>
+                            <i class="bi bi-check-circle"></i> Confirmar Préstamo
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

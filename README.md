@@ -57,6 +57,23 @@ El objetivo es gestionar libros, ejemplares, socios, préstamos y multas, implem
 | **Base de Datos** | **SQLite3** | *¡Selección final por simplicidad!* |
 | Control de Versiones | Git | 2.x |
 
+## **4. Seguridad Adicional: Autenticación (Login/Logout)**
+
+Aunque no fue un requisito funcional explícito, la aplicación debe garantizar que solo usuarios autorizados (el bibliotecario) puedan realizar transacciones críticas.
+
+### Patrón y Lógica Implementada
+* **Mecanismo:** Se utiliza el sistema de autenticación por defecto de Django (`django.contrib.auth`).
+* **Controlador Protegido:** Todas las vistas de transacción (Préstamo, Devolución, Alta de Socio) deben estar protegidas usando el decorador **`@login_required`** de Django.
+
+### Requerimientos de Código
+
+| Componente | Archivo | Acción Necesaria |
+| :--- | :--- | :--- |
+| **URLs de Auth** | `biblioteca_project/urls.py` | Incluir las rutas de Django Auth: `path('accounts/', include('django.contrib.auth.urls'))`. |
+| **Configuración** | `settings.py` | Definir las redirecciones: `LOGIN_REDIRECT_URL = '/'` y `LOGOUT_REDIRECT_URL = '/'`. |
+| **Vistas Protegidas** | `gestion_libros/views.py` | Aplicar `@login_required` a las funciones `registrar_socio`, `registrar_prestamo`, y `procesar_devolucion`. |
+| **Superusuario** | `Terminal` | Recordar usar `python manage.py createsuperuser` para poder iniciar sesión y probar la aplicación. |
+
 ### Requerimientos (`requirements.txt`)
 
 El proyecto solo requiere dependencias mínimas para funcionar con SQLite:

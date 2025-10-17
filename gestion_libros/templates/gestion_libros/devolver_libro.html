@@ -1,0 +1,109 @@
+{% extends 'gestion_libros/base.html' %}
+
+{% block title %}Devolver Libro{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-box-arrow-in-left"></i> Devolución de Libro
+                </h4>
+            </div>
+            <div class="card-body">
+                <h5 class="mb-3">Información del Préstamo</h5>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Socio:</strong> {{ prestamo.socio.nombre }}<br>
+                        <strong>DNI:</strong> {{ prestamo.socio.dni }}<br>
+                        <strong>Nº Socio:</strong> {{ prestamo.socio.numero_socio }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Libro:</strong> {{ prestamo.ejemplar.libro.titulo }}<br>
+                        <strong>Autor:</strong> {{ prestamo.ejemplar.libro.autor }}<br>
+                        <strong>Código:</strong> {{ prestamo.ejemplar.codigo_ejemplar }}
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="alert alert-secondary mb-0">
+                            <small>Fecha Préstamo</small><br>
+                            <strong>{{ prestamo.fecha_inicio|date:"d/m/Y" }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="alert alert-warning mb-0">
+                            <small>Devolución Prevista</small><br>
+                            <strong>{{ prestamo.fecha_devolucion_prevista|date:"d/m/Y" }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="alert {% if tiene_retraso %}alert-danger{% else %}alert-success{% endif %} mb-0">
+                            <small>Días Transcurridos</small><br>
+                            <strong>{{ dias_transcurridos }} día(s)</strong>
+                            {% if tiene_retraso %}
+                            <br><small class="text-danger"><strong>Retraso: {{ dias_retraso }} día(s)</strong></small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <form method="POST" action="{% url 'devolver_libro' prestamo.id %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Estado Físico del Libro *</strong></label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="estado_fisico" id="bueno" value="bueno" required checked>
+                            <label class="form-check-label" for="bueno">
+                                <strong class="text-success">Bueno</strong> - El libro está en perfectas condiciones
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="estado_fisico" id="dañado" value="dañado" required>
+                            <label class="form-check-label" for="dañado">
+                                <strong class="text-warning">Dañado</strong> - El libro tiene daños (multa: ${{ multa_daño }})
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="estado_fisico" id="perdido" value="perdido" required>
+                            <label class="form-check-label" for="perdido">
+                                <strong class="text-danger">Perdido</strong> - El libro se perdió (multa: ${{ multa_perdida }})
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="observaciones" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" rows="3" 
+                                  placeholder="Detalles adicionales sobre la devolución..."></textarea>
+                    </div>
+                    
+                    {% if tiene_retraso %}
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle"></i> 
+                        <strong>Atención:</strong> El libro tiene {{ dias_retraso }} día(s) de retraso.
+                        Se aplicará una multa de <strong>${{ multa_estimada_retraso }}</strong> por retraso
+                        {% if estado_fisico != 'bueno' %}(más la multa por daño/pérdida si aplica){% endif %}.
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'listar_prestamos' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Confirmar Devolución
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

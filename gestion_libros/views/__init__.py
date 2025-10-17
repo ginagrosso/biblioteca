@@ -7,6 +7,7 @@ from .base import index, listar_libros, listar_socios, listar_prestamos
 from .prestamo import realizar_prestamo
 from .devolucion import devolver_libro
 from .socio import registrar_socio
+from .libro import registrar_libro, registrar_ejemplar
 
 __all__ = [
     'index',
@@ -16,4 +17,6 @@ __all__ = [
     'realizar_prestamo',
     'devolver_libro',
     'registrar_socio',
+    'registrar_libro',
+    'registrar_ejemplar',
 ]
