@@ -7,8 +7,10 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.utils import timezone
 from ..models import Socio
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def registrar_socio(request):
     """
     Proceso de alta de un nuevo socio:

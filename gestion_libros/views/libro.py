@@ -5,8 +5,10 @@ Vistas para la gestión de libros y ejemplares.
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from ..models import Libro, Ejemplar
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def registrar_libro(request):
     """
     Vista para registrar un nuevo libro en el catálogo.
@@ -57,7 +59,7 @@ def registrar_libro(request):
     # GET - Mostrar formulario
     return render(request, 'gestion_libros/registrar_libro.html')
 
-
+@login_required
 def registrar_ejemplar(request):
     """
     Vista para registrar un nuevo ejemplar de un libro existente.

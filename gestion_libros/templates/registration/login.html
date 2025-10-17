@@ -1,0 +1,72 @@
+{% extends 'gestion_libros/base.html' %}
+
+{% block title %}Iniciar Sesión{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white text-center">
+                <h3 class="mb-0">
+                    <i class="bi bi-lock"></i> Sistema de Biblioteca
+                </h3>
+                <p class="mb-0 mt-2">Iniciar Sesión</p>
+            </div>
+            <div class="card-body p-4">
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i> 
+                    Usuario o contraseña incorrectos. Por favor, intenta nuevamente.
+                </div>
+                {% endif %}
+
+                <form method="post" action="{% url 'login' %}">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">
+                            <i class="bi bi-person"></i> Usuario
+                        </label>
+                        <input type="text" 
+                               class="form-control form-control-lg" 
+                               id="id_username" 
+                               name="username" 
+                               placeholder="Ingresa tu usuario"
+                               required 
+                               autofocus>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="id_password" class="form-label">
+                            <i class="bi bi-key"></i> Contraseña
+                        </label>
+                        <input type="password" 
+                               class="form-control form-control-lg" 
+                               id="id_password" 
+                               name="password" 
+                               placeholder="Ingresa tu contraseña"
+                               required>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
+                        </button>
+                    </div>
+                    
+                    <input type="hidden" name="next" value="{{ next }}">
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center text-muted">
+                    <small>
+                        <i class="bi bi-info-circle"></i> 
+                        Acceso solo para personal autorizado de la biblioteca
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -9,8 +9,10 @@ from django.utils import timezone
 from datetime import timedelta
 from ..models import Socio, Ejemplar, Prestamo
 from ..singleton import obtener_configuracion
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def realizar_prestamo(request):
     """
     Proceso de préstamo de un libro:

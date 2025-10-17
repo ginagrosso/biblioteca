@@ -40,12 +40,36 @@
                         </a>
                     </li>
                 </ul>
-                <ul class="navbar-nav">
+                                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ user.username }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="/admin/" target="_blank">
+                                    <i class="bi bi-gear"></i> Panel Admin
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </li>
+                    {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/" target="_blank">
-                            <i class="bi bi-gear"></i> Admin
+                        <a class="nav-link" href="{% url 'login' %}">
+                            <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
                         </a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

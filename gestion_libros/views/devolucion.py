@@ -8,8 +8,10 @@ from django.contrib import messages
 from django.utils import timezone
 from ..models import Prestamo, Multa
 from ..singleton import obtener_configuracion
+from django.contrib.auth.decorators import login_required
 
 
+@login_required
 def devolver_libro(request, prestamo_id):
     """
     Proceso de devolución de un libro:
