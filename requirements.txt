@@ -1,3 +1,2 @@
-# Dependencias Directas
-Django==4.2.0  # Pinning de Versiones
-requests # Para posibles integraciones futuras (ej. API de libros)
+Django==4.2.16
+requests==2.32.3

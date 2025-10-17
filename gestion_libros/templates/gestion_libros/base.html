@@ -6,10 +6,383 @@
     <title>{% block title %}Sistema de Biblioteca{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            /* Paleta Vintage Biblioteca - Tonos tierra y madera */
+            --primary-color: #8B4513;      /* Marrón silla */
+            --primary-light: #A0522D;      /* Siena tostado */
+            --primary-dark: #5D2E0F;       /* Marrón oscuro */
+            --secondary-color: #6B5B4D;    /* Taupe */
+            --success-color: #4A6741;      /* Verde bosque */
+            --warning-color: #C19A6B;      /* Dorado viejo */
+            --danger-color: #8B3A3A;       /* Borgoña */
+            --info-color: #5B7C8D;         /* Azul pizarra */
+            
+            /* Fondo estilo app de escritorio */
+            --light-bg: #E8DED2;           /* Pergamino claro */
+            --card-bg: #F5F1E8;            /* Papel antiguo */
+            --sidebar-bg: #4A3F35;         /* Madera oscura */
+            --text-primary: #2C2416;       /* Negro sepia */
+            --text-secondary: #6B5B4D;     /* Taupe texto */
+            --border-color: #D4C4B0;       /* Beige oscuro */
+            
+            /* Sombras más sutiles para look desktop */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+            --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.18);
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-primary);
+            font-family: 'Georgia', 'Merriweather', 'Times New Roman', serif;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Navbar estilo desktop app - barra superior fija */
+        .navbar {
+            background: var(--sidebar-bg) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            border-bottom: 2px solid var(--primary-color);
+            padding: 0.75rem 1rem;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.35rem;
+            letter-spacing: 0.5px;
+            color: var(--warning-color) !important;
+        }
+
+        /* Cards estilo ventanas de aplicación */
+        .card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.15s ease;
+        }
+
+        .card:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .card-header {
+            background-color: #E0D5C7;
+            border-bottom: 2px solid var(--border-color);
+            font-weight: 600;
+            color: var(--primary-dark);
+            padding: 0.875rem 1.25rem;
+        }
+
+        /* Botones estilo desktop - más sólidos, menos gradientes */
+        .btn {
+            border-radius: 4px;
+            font-weight: 500;
+            transition: all 0.15s ease;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 0.5rem 1rem;
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            border-color: var(--primary-dark);
+            color: #FFF;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            border-color: var(--primary-dark);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            border-color: #3d5635;
+            color: #FFF;
+        }
+
+        .btn-success:hover {
+            background: #3d5635;
+            border-color: #2d4125;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-info {
+            background: var(--info-color);
+            border-color: #4a6576;
+            color: #FFF;
+        }
+
+        .btn-info:hover {
+            background: #4a6576;
+            border-color: #3a5566;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-warning {
+            background: var(--warning-color);
+            border-color: #a8845a;
+            color: var(--text-primary);
+        }
+
+        .btn-warning:hover {
+            background: #a8845a;
+            border-color: #8f6d49;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-danger {
+            background: var(--danger-color);
+            border-color: #6d2929;
+            color: #FFF;
+        }
+
+        .btn-danger:hover {
+            background: #6d2929;
+            border-color: #5d1f1f;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Tablas estilo hoja de cálculo/database */
+        .table {
+            background-color: var(--card-bg);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .table thead th {
+            background-color: var(--primary-color);
+            color: #F5F1E8;
+            border: none;
+            font-weight: 600;
+            padding: 0.875rem 1rem;
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .table tbody td {
+            padding: 0.75rem 1rem;
+            border-color: var(--border-color);
+            vertical-align: middle;
+            font-size: 14px;
+        }
+
+        .table tbody tr:hover {
+            background-color: #EBE4D9;
+        }
+
+        .table tbody tr {
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Badges más sutiles */
+        .badge {
+            border-radius: 3px;
+            font-weight: 500;
+            padding: 0.35rem 0.65rem;
+            font-size: 12px;
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+        }
+
+        /* Alertas estilo desktop - sin gradientes */
+        .alert {
+            border-radius: 4px;
+            border: 2px solid;
+            box-shadow: none;
+            font-size: 14px;
+        }
+
+        .alert-success {
+            background: #E8F5E9;
+            border-color: var(--success-color);
+            color: #2d4125;
+        }
+
+        .alert-danger {
+            background: #FFEBEE;
+            border-color: var(--danger-color);
+            color: #5d1f1f;
+        }
+
+        .alert-warning {
+            background: #FFF8E1;
+            border-color: var(--warning-color);
+            color: #6d5022;
+        }
+
+        .alert-info {
+            background: #E3F2FD;
+            border-color: var(--info-color);
+            color: #2d4455;
+        }
+
+        /* Formularios estilo desktop */
+        .form-control, .form-select {
+            border-radius: 4px;
+            border: 2px solid var(--border-color);
+            padding: 0.6rem 0.9rem;
+            transition: all 0.15s ease;
+            background-color: #FDFCFB;
+            font-size: 14px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+            background-color: #FFF;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.4rem;
+            font-size: 13px;
+            font-family: 'Segoe UI', -apple-system, sans-serif;
+        }
+
+        /* Barra de búsqueda estilo toolbar */
+        .search-container {
+            background: #DED4C4;
+            border-radius: 4px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        /* Stats cards estilo paneles desktop */
+        .stats-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            transition: all 0.15s ease;
+        }
+
+        .stats-card:hover {
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .stats-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        /* Footer más discreto */
+        .footer {
+            background: var(--sidebar-bg);
+            color: #C4B5A0;
+            margin-top: 3rem;
+            border-top: 2px solid var(--primary-color);
+        }
+
+        /* Page header estilo título de ventana */
+        .page-header {
+            background: var(--primary-color);
+            color: #F5F1E8;
+            padding: 1.5rem 0;
+            margin-bottom: 1.5rem;
+            border-radius: 0;
+            border-bottom: 3px solid var(--primary-dark);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Empty states más sutiles */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+            background: #F5F1E8;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+        }
+
+        .empty-state i {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            opacity: 0.4;
+            color: var(--primary-color);
+        }
+
+        /* Spinner más sutil */
+        .loading-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(139, 69, 19, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--primary-color);
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Transiciones más rápidas estilo desktop */
+        .fade-in {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mejoras adicionales estilo app desktop */
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        h1 { font-size: 1.75rem; }
+        h2 { font-size: 1.5rem; }
+        h3 { font-size: 1.25rem; }
+
+        code {
+            background-color: #E8DED2;
+            color: var(--primary-dark);
+            padding: 0.2rem 0.5rem;
+            border-radius: 3px;
+            font-size: 13px;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #E8DED2;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 6px;
+            border: 2px solid #E8DED2;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="{% url 'index' %}">
                 <i class="bi bi-book"></i> Sistema de Biblioteca
@@ -94,12 +467,78 @@
     </div>
 
     <!-- Footer -->
-    <footer class="mt-5 py-3 bg-light">
+    <footer class="footer py-4">
         <div class="container text-center">
-            <p class="text-muted mb-0">Sistema de Gestión de Biblioteca - 2do Parcial METII</p>
+            <p class="mb-0">
+                <i class="bi bi-book me-2"></i>
+                Sistema de Gestión de Biblioteca - 2do Parcial METII
+            </p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Animaciones y mejoras de UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Agregar clase fade-in a elementos principales
+            const mainContent = document.querySelector('.container');
+            if (mainContent) {
+                mainContent.classList.add('fade-in');
+            }
+
+            // Mejorar mensajes de alerta
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                alert.style.animation = 'fadeIn 0.5s ease-in';
+            });
+
+            // Auto-hide alerts después de 5 segundos
+            setTimeout(function() {
+                alerts.forEach(alert => {
+                    if (alert.classList.contains('alert-success')) {
+                        const bsAlert = new bootstrap.Alert(alert);
+                        bsAlert.close();
+                    }
+                });
+            }, 5000);
+        });
+
+        // Función para mostrar loading en botones
+        function showLoading(button) {
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading-spinner"></span> Procesando...';
+            button.disabled = true;
+            
+            // Restaurar después de 3 segundos como fallback
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }, 3000);
+        }
+
+        // Función para búsqueda en tiempo real
+        function setupSearch(inputId, tableId) {
+            const searchInput = document.getElementById(inputId);
+            const table = document.getElementById(tableId);
+            
+            if (searchInput && table) {
+                searchInput.addEventListener('input', function() {
+                    const filter = this.value.toLowerCase();
+                    const rows = table.getElementsByTagName('tr');
+                    
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        const text = row.textContent.toLowerCase();
+                        
+                        if (text.includes(filter)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>

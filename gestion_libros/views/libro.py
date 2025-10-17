@@ -22,14 +22,22 @@ def registrar_libro(request):
         
         # Validaciones básicas
         if not isbn or not titulo or not autor:
-            messages.error(request, 'El ISBN, título y autor son obligatorios.')
+            messages.error(request, 
+                f'❌ <strong>Campos obligatorios faltantes</strong><br>'
+                f'Debes completar todos los campos obligatorios:<br>'
+                f'• <strong>ISBN:</strong> {"✓" if isbn else "❌"}<br>'
+                f'• <strong>Título:</strong> {"✓" if titulo else "❌"}<br>'
+                f'• <strong>Autor:</strong> {"✓" if autor else "❌"}<br>'
+                f'<small>Completa los campos marcados con ❌ para continuar.</small>'
+            )
             return redirect('registrar_libro')
         
         # Validar que el ISBN no exista
         if Libro.objects.filter(isbn=isbn).exists():
-            messages.error(
-                request, 
-                f'Ya existe un libro registrado con el ISBN {isbn}.'
+            messages.error(request, 
+                f'❌ <strong>ISBN ya registrado</strong><br>'
+                f'Ya existe un libro registrado con el ISBN <strong>{isbn}</strong>.<br>'
+                f'<small>Verifica el número de ISBN o busca el libro existente en el catálogo.</small>'
             )
             return redirect('registrar_libro')
         
@@ -45,15 +53,22 @@ def registrar_libro(request):
             
             messages.success(
                 request, 
-                f'✓ Libro registrado exitosamente.<br>'
-                f'Título: {libro.titulo}<br>'
-                f'ISBN: {libro.isbn}<br>'
-                f'Ahora puedes agregar ejemplares de este libro.'
+                f'✅ <strong>¡Libro registrado exitosamente!</strong><br>'
+                f'<strong>Título:</strong> {libro.titulo}<br>'
+                f'<strong>Autor:</strong> {libro.autor}<br>'
+                f'<strong>ISBN:</strong> <code>{libro.isbn}</code><br>'
+                f'<strong>Editorial:</strong> {libro.editorial or "No especificada"}<br>'
+                f'<strong>Año:</strong> {libro.año_publicacion or "No especificado"}<br>'
+                f'<small>El libro ha sido agregado al catálogo. Ahora puedes registrar ejemplares de este libro.</small>'
             )
             return redirect('listar_libros')
             
         except Exception as e:
-            messages.error(request, f'Error al registrar el libro: {str(e)}')
+            messages.error(request, 
+                f'❌ <strong>Error al registrar el libro</strong><br>'
+                f'No se pudo completar el registro: <strong>{str(e)}</strong><br>'
+                f'<small>Verifica los datos ingresados y contacta al administrador si el problema persiste.</small>'
+            )
             return redirect('registrar_libro')
     
     # GET - Mostrar formulario
@@ -71,13 +86,21 @@ def registrar_ejemplar(request):
         
         # Validación básica
         if not libro_isbn:
-            messages.error(request, 'Debe seleccionar un libro.')
+            messages.error(request, 
+                f'❌ <strong>Libro no seleccionado</strong><br>'
+                f'Debes seleccionar un libro para registrar un ejemplar.<br>'
+                f'<small>Elige un libro de la lista desplegable para continuar.</small>'
+            )
             return redirect('registrar_ejemplar')
         
         try:
             libro = Libro.objects.get(isbn=libro_isbn)
         except Libro.DoesNotExist:
-            messages.error(request, f'No existe un libro con ISBN {libro_isbn}.')
+            messages.error(request, 
+                f'❌ <strong>Libro no encontrado</strong><br>'
+                f'No existe un libro con ISBN <strong>{libro_isbn}</strong>.<br>'
+                f'<small>Verifica el ISBN o registra el libro primero en el catálogo.</small>'
+            )
             return redirect('registrar_ejemplar')
         
         # GENERAR CÓDIGO AUTOMÁTICAMENTE CON ISBN COMPLETO
@@ -118,15 +141,22 @@ def registrar_ejemplar(request):
             
             messages.success(
                 request, 
-                f'✓ Ejemplar registrado exitosamente.<br>'
-                f'Libro: {libro.titulo}<br>'
-                f'Código generado: <strong>{ejemplar.codigo_ejemplar}</strong><br>'
-                f'Estado: Disponible'
+                f'✅ <strong>¡Ejemplar registrado exitosamente!</strong><br>'
+                f'<strong>Libro:</strong> {libro.titulo}<br>'
+                f'<strong>Autor:</strong> {libro.autor}<br>'
+                f'<strong>Código generado:</strong> <code>{ejemplar.codigo_ejemplar}</code><br>'
+                f'<strong>Estado:</strong> Disponible<br>'
+                f'<strong>Observaciones:</strong> {ejemplar.observaciones or "Ninguna"}<br>'
+                f'<small>El ejemplar está listo para ser prestado a los socios.</small>'
             )
             return redirect('listar_libros')
             
         except Exception as e:
-            messages.error(request, f'Error al registrar el ejemplar: {str(e)}')
+            messages.error(request, 
+                f'❌ <strong>Error al registrar el ejemplar</strong><br>'
+                f'No se pudo completar el registro: <strong>{str(e)}</strong><br>'
+                f'<small>Verifica los datos ingresados y contacta al administrador si el problema persiste.</small>'
+            )
             return redirect('registrar_ejemplar')
     
     # GET - Mostrar formulario

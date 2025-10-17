@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
+from django.contrib.auth.decorators import login_required
+from django.db import models
 from datetime import timedelta
 from ..models import Libro, Ejemplar, Socio, Prestamo, Multa
 from ..singleton import obtener_configuracion
@@ -19,26 +21,124 @@ def index(request):
 
 
 def listar_libros(request):
-    """Lista todos los libros disponibles"""
+    """Lista todos los libros disponibles con funcionalidad de búsqueda"""
     libros = Libro.objects.all()
-    return render(request, 'gestion_libros/listar_libros.html', {'libros': libros})
+    query = request.GET.get('q', '').strip()
+    filtro_tipo = request.GET.get('filtro', 'todos')
+    
+    if query:
+        if filtro_tipo == 'isbn':
+            libros = libros.filter(isbn__icontains=query)
+        elif filtro_tipo == 'titulo':
+            libros = libros.filter(titulo__icontains=query)
+        elif filtro_tipo == 'autor':
+            libros = libros.filter(autor__icontains=query)
+        elif filtro_tipo == 'editorial':
+            libros = libros.filter(editorial__icontains=query)
+        else:  # 'todos' - búsqueda general
+            libros = libros.filter(
+                models.Q(isbn__icontains=query) |
+                models.Q(titulo__icontains=query) |
+                models.Q(autor__icontains=query) |
+                models.Q(editorial__icontains=query)
+            )
+    
+    context = {
+        'libros': libros,
+        'query': query,
+        'filtro_tipo': filtro_tipo,
+        'total_resultados': libros.count()
+    }
+    return render(request, 'gestion_libros/listar_libros.html', context)
 
 
 def listar_socios(request):
-    """Lista todos los socios"""
+    """Lista todos los socios con funcionalidad de búsqueda"""
     socios = Socio.objects.all()
-    return render(request, 'gestion_libros/listar_socios.html', {'socios': socios})
+    query = request.GET.get('q', '').strip()
+    filtro_tipo = request.GET.get('filtro', 'todos')
+    estado_filtro = request.GET.get('estado', 'todos')
+    
+    if query:
+        if filtro_tipo == 'dni':
+            socios = socios.filter(dni__icontains=query)
+        elif filtro_tipo == 'numero_socio':
+            socios = socios.filter(numero_socio__icontains=query)
+        elif filtro_tipo == 'nombre':
+            socios = socios.filter(nombre__icontains=query)
+        elif filtro_tipo == 'email':
+            socios = socios.filter(email__icontains=query)
+        else:  # 'todos' - búsqueda general
+            socios = socios.filter(
+                models.Q(dni__icontains=query) |
+                models.Q(numero_socio__icontains=query) |
+                models.Q(nombre__icontains=query) |
+                models.Q(email__icontains=query)
+            )
+    
+    if estado_filtro == 'activos':
+        socios = socios.filter(activo=True)
+    elif estado_filtro == 'inactivos':
+        socios = socios.filter(activo=False)
+    
+    context = {
+        'socios': socios,
+        'query': query,
+        'filtro_tipo': filtro_tipo,
+        'estado_filtro': estado_filtro,
+        'total_resultados': socios.count()
+    }
+    return render(request, 'gestion_libros/listar_socios.html', context)
 
 
 def listar_prestamos(request):
-    """Lista todos los préstamos"""
+    """Lista todos los préstamos con funcionalidad de búsqueda"""
     prestamos = Prestamo.objects.all().order_by('-fecha_inicio')
-    return render(request, 'gestion_libros/listar_prestamos.html', {'prestamos': prestamos})
+    query = request.GET.get('q', '').strip()
+    filtro_tipo = request.GET.get('filtro', 'todos')
+    estado_filtro = request.GET.get('estado', 'todos')
+    
+    if query:
+        if filtro_tipo == 'socio':
+            prestamos = prestamos.filter(socio__nombre__icontains=query)
+        elif filtro_tipo == 'libro':
+            prestamos = prestamos.filter(ejemplar__libro__titulo__icontains=query)
+        elif filtro_tipo == 'ejemplar':
+            prestamos = prestamos.filter(ejemplar__codigo_ejemplar__icontains=query)
+        elif filtro_tipo == 'isbn':
+            prestamos = prestamos.filter(ejemplar__libro__isbn__icontains=query)
+        else:  # 'todos' - búsqueda general
+            prestamos = prestamos.filter(
+                models.Q(socio__nombre__icontains=query) |
+                models.Q(ejemplar__libro__titulo__icontains=query) |
+                models.Q(ejemplar__codigo_ejemplar__icontains=query) |
+                models.Q(ejemplar__libro__isbn__icontains=query)
+            )
+    
+    if estado_filtro == 'activos':
+        prestamos = prestamos.filter(fecha_devolucion_real__isnull=True)
+    elif estado_filtro == 'devueltos':
+        prestamos = prestamos.filter(fecha_devolucion_real__isnull=False)
+    elif estado_filtro == 'retrasados':
+        prestamos = prestamos.filter(
+            fecha_devolucion_real__isnull=True,
+            fecha_devolucion_prevista__lt=timezone.now().date()
+        )
+    
+    context = {
+        'prestamos': prestamos,
+        'query': query,
+        'filtro_tipo': filtro_tipo,
+        'estado_filtro': estado_filtro,
+        'total_resultados': prestamos.count()
+    }
+    return render(request, 'gestion_libros/listar_prestamos.html', context)
 
 
 # ============================================================
 # PROCESO 1: PRÉSTAMO DE UN LIBRO
 # ============================================================
+@login_required
 def realizar_prestamo(request):
     """
     Proceso de préstamo de un libro:
@@ -56,15 +156,27 @@ def realizar_prestamo(request):
             
             # Validaciones
             if not socio.activo:
-                messages.error(request, f'El socio {socio.nombre} no está activo.')
+                messages.error(request, 
+                    f'❌ <strong>No se puede realizar el préstamo</strong><br>'
+                    f'El socio <strong>{socio.nombre}</strong> (Nº {socio.numero_socio}) no está activo.<br>'
+                    f'<small>Contacta al administrador para reactivar la cuenta del socio.</small>'
+                )
                 return redirect('realizar_prestamo')
             
             if socio.tiene_multas_pendientes():
-                messages.error(request, f'El socio {socio.nombre} tiene multas pendientes por ${socio.monto_total_multas()}.')
+                messages.error(request, 
+                    f'❌ <strong>No se puede realizar el préstamo</strong><br>'
+                    f'El socio <strong>{socio.nombre}</strong> tiene multas pendientes por <strong>${socio.monto_total_multas()}</strong>.<br>'
+                    f'<small>El socio debe pagar las multas antes de poder realizar nuevos préstamos.</small>'
+                )
                 return redirect('realizar_prestamo')
             
             if not ejemplar.esta_disponible():
-                messages.error(request, f'El ejemplar {ejemplar.codigo_ejemplar} no está disponible (Estado: {ejemplar.get_estado_display()}).')
+                messages.error(request, 
+                    f'❌ <strong>No se puede realizar el préstamo</strong><br>'
+                    f'El ejemplar <strong>{ejemplar.codigo_ejemplar}</strong> no está disponible.<br>'
+                    f'<small>Estado actual: <strong>{ejemplar.get_estado_display()}</strong></small>'
+                )
                 return redirect('realizar_prestamo')
             
             # Obtener configuración
@@ -72,7 +184,11 @@ def realizar_prestamo(request):
             
             # Verificar límite de préstamos
             if socio.prestamos_activos().count() >= config.max_prestamos_simultaneos:
-                messages.error(request, f'El socio {socio.nombre} ya tiene {config.max_prestamos_simultaneos} préstamos activos.')
+                messages.error(request, 
+                    f'❌ <strong>Límite de préstamos alcanzado</strong><br>'
+                    f'El socio <strong>{socio.nombre}</strong> ya tiene <strong>{config.max_prestamos_simultaneos} préstamos activos</strong>.<br>'
+                    f'<small>Debe devolver algún libro antes de poder realizar un nuevo préstamo.</small>'
+                )
                 return redirect('realizar_prestamo')
             
             # Crear el préstamo
@@ -87,15 +203,34 @@ def realizar_prestamo(request):
             ejemplar.estado = 'prestado'
             ejemplar.save()
             
-            messages.success(request, f'Préstamo realizado exitosamente. Devolución prevista: {fecha_devolucion.strftime("%d/%m/%Y")}')
+            messages.success(request, 
+                f'✅ <strong>¡Préstamo realizado exitosamente!</strong><br>'
+                f'<strong>Socio:</strong> {socio.nombre} (Nº {socio.numero_socio})<br>'
+                f'<strong>Libro:</strong> {ejemplar.libro.titulo}<br>'
+                f'<strong>Ejemplar:</strong> {ejemplar.codigo_ejemplar}<br>'
+                f'<strong>Fecha de devolución:</strong> {fecha_devolucion.strftime("%d/%m/%Y")}<br>'
+                f'<small>El ejemplar ha sido marcado como prestado y está disponible para consulta.</small>'
+            )
             return redirect('listar_prestamos')
             
         except Socio.DoesNotExist:
-            messages.error(request, f'No existe un socio con DNI {socio_id}.')
+            messages.error(request, 
+                f'❌ <strong>Socio no encontrado</strong><br>'
+                f'No existe un socio registrado con el DNI <strong>{socio_id}</strong>.<br>'
+                f'<small>Verifica el número de DNI o registra un nuevo socio.</small>'
+            )
         except Ejemplar.DoesNotExist:
-            messages.error(request, f'No existe un ejemplar con código {ejemplar_id}.')
+            messages.error(request, 
+                f'❌ <strong>Ejemplar no encontrado</strong><br>'
+                f'No existe un ejemplar con el código <strong>{ejemplar_id}</strong>.<br>'
+                f'<small>Verifica el código del ejemplar o registra un nuevo ejemplar.</small>'
+            )
         except Exception as e:
-            messages.error(request, f'Error al realizar el préstamo: {str(e)}')
+            messages.error(request, 
+                f'❌ <strong>Error inesperado</strong><br>'
+                f'No se pudo realizar el préstamo: <strong>{str(e)}</strong><br>'
+                f'<small>Contacta al administrador del sistema.</small>'
+            )
         
         return redirect('realizar_prestamo')
     
@@ -112,6 +247,7 @@ def realizar_prestamo(request):
 # ============================================================
 # PROCESO 2: DEVOLUCIÓN DE UN LIBRO
 # ============================================================
+@login_required
 def devolver_libro(request, prestamo_id):
     """
     Proceso de devolución de un libro:
@@ -149,9 +285,20 @@ def devolver_libro(request, prestamo_id):
                     descripcion=f'Retraso de {dias_retraso} días en la devolución'
                 )
                 
-                messages.warning(request, f'Libro devuelto. Multa por retraso: ${monto_multa} ({dias_retraso} días)')
+                messages.warning(request, 
+                    f'⚠️ <strong>Libro devuelto con retraso</strong><br>'
+                    f'<strong>Multa aplicada:</strong> ${monto_multa}<br>'
+                    f'<strong>Días de retraso:</strong> {dias_retraso} día{dias_retraso|pluralize}<br>'
+                    f'<small>La multa ha sido registrada en el sistema. El socio debe pagarla antes de realizar nuevos préstamos.</small>'
+                )
             else:
-                messages.success(request, 'Libro devuelto exitosamente a tiempo.')
+                messages.success(request, 
+                    f'✅ <strong>¡Libro devuelto exitosamente!</strong><br>'
+                    f'<strong>Socio:</strong> {prestamo.socio.nombre}<br>'
+                    f'<strong>Libro:</strong> {prestamo.ejemplar.libro.titulo}<br>'
+                    f'<strong>Ejemplar:</strong> {prestamo.ejemplar.codigo_ejemplar}<br>'
+                    f'<small>El ejemplar ha sido marcado como disponible y está listo para nuevos préstamos.</small>'
+                )
         
         elif estado_fisico == 'dañado':
             # Cambiar estado a mantenimiento
@@ -167,7 +314,12 @@ def devolver_libro(request, prestamo_id):
                 descripcion='Libro devuelto con daños'
             )
             
-            messages.error(request, f'Libro devuelto con daños. Multa aplicada: ${config.multa_daño_libro}')
+            messages.error(request, 
+                f'❌ <strong>Libro devuelto con daños</strong><br>'
+                f'<strong>Multa aplicada:</strong> ${config.multa_daño_libro}<br>'
+                f'<strong>Estado del ejemplar:</strong> En mantenimiento<br>'
+                f'<small>El ejemplar ha sido enviado a mantenimiento. La multa ha sido registrada en el sistema.</small>'
+            )
         
         elif estado_fisico == 'perdido':
             # Cambiar estado a perdido
@@ -183,7 +335,12 @@ def devolver_libro(request, prestamo_id):
                 descripcion='Libro perdido'
             )
             
-            messages.error(request, f'Libro reportado como perdido. Multa aplicada: ${config.multa_perdida_libro}')
+            messages.error(request, 
+                f'❌ <strong>Libro reportado como perdido</strong><br>'
+                f'<strong>Multa aplicada:</strong> ${config.multa_perdida_libro}<br>'
+                f'<strong>Estado del ejemplar:</strong> Perdido<br>'
+                f'<small>El ejemplar ha sido marcado como perdido. La multa ha sido registrada en el sistema.</small>'
+            )
         
         return redirect('listar_prestamos')
     
@@ -193,6 +350,7 @@ def devolver_libro(request, prestamo_id):
 # ============================================================
 # PROCESO 3: ALTA DE UN SOCIO NUEVO
 # ============================================================
+@login_required
 def registrar_socio(request):
     """
     Proceso de alta de un nuevo socio:
@@ -209,7 +367,11 @@ def registrar_socio(request):
         
         # Validar que el DNI no exista
         if Socio.objects.filter(dni=dni).exists():
-            messages.error(request, f'Ya existe un socio registrado con el DNI {dni}.')
+            messages.error(request, 
+                f'❌ <strong>DNI ya registrado</strong><br>'
+                f'Ya existe un socio registrado con el DNI <strong>{dni}</strong>.<br>'
+                f'<small>Verifica el número de DNI o busca el socio existente en la lista.</small>'
+            )
             return redirect('registrar_socio')
         
         # Generar número de socio (formato: SOC-YYYY-NNNN)
@@ -235,11 +397,23 @@ def registrar_socio(request):
                 direccion=direccion
             )
             
-            messages.success(request, f'Socio registrado exitosamente. Número de socio: {nuevo_numero}')
+            messages.success(request, 
+                f'✅ <strong>¡Socio registrado exitosamente!</strong><br>'
+                f'<strong>Nombre:</strong> {socio.nombre}<br>'
+                f'<strong>DNI:</strong> {socio.dni}<br>'
+                f'<strong>Número de socio:</strong> <code>{nuevo_numero}</code><br>'
+                f'<strong>Email:</strong> {socio.email or "No proporcionado"}<br>'
+                f'<strong>Teléfono:</strong> {socio.telefono or "No proporcionado"}<br>'
+                f'<small>El socio ya puede realizar préstamos en la biblioteca.</small>'
+            )
             return redirect('listar_socios')
             
         except Exception as e:
-            messages.error(request, f'Error al registrar el socio: {str(e)}')
+            messages.error(request, 
+                f'❌ <strong>Error al registrar el socio</strong><br>'
+                f'No se pudo completar el registro: <strong>{str(e)}</strong><br>'
+                f'<small>Verifica los datos ingresados y contacta al administrador si el problema persiste.</small>'
+            )
             return redirect('registrar_socio')
     
     return render(request, 'gestion_libros/registrar_socio.html')
