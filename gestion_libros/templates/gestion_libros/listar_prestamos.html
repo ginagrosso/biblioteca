@@ -181,7 +181,7 @@
                         <h5 class="modal-title"><i class="bi bi-box-arrow-in-left me-2"></i>Devolver Libro</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    <form method="post" action="{% url 'devolver_libro' prestamo.id %}">
+                    <form method="post" action="{% url 'devolver_libro' prestamo.id %}" onsubmit="return validarFormularioDevolucion({{ prestamo.id }})">
                         {% csrf_token %}
                         <div class="modal-body">
                             <div class="mb-3">
@@ -198,12 +198,45 @@
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">Estado Físico del Libro *</label>
-                                <select class="form-select" name="estado_fisico" required>
+                                <select class="form-select" name="estado_fisico" id="estadoFisico{{ prestamo.id }}" required onchange="toggleMontoFields({{ prestamo.id }})">
                                     <option value="bueno">Bueno (sin daños)</option>
                                     <option value="dañado">Dañado (requiere mantenimiento)</option>
                                     <option value="perdido">Perdido</option>
                                 </select>
                             </div>
+                            
+                            <!-- Campo de monto para daño -->
+                            <div class="mb-3" id="montoDaño{{ prestamo.id }}" style="display: none;">
+                                <label class="form-label">Monto de la multa por daño *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           name="monto_daño" 
+                                           id="montoDañoInput{{ prestamo.id }}"
+                                           step="0.01" 
+                                           min="0" 
+                                           placeholder="Ingrese el monto de la multa">
+                                </div>
+                                <small class="text-muted">El bibliotecario debe ingresar el monto según el daño observado</small>
+                            </div>
+                            
+                            <!-- Campo de monto para pérdida -->
+                            <div class="mb-3" id="montoPerdida{{ prestamo.id }}" style="display: none;">
+                                <label class="form-label">Monto de la multa por pérdida *</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" 
+                                           class="form-control" 
+                                           name="monto_perdida" 
+                                           id="montoPerdidaInput{{ prestamo.id }}"
+                                           step="0.01" 
+                                           min="0" 
+                                           placeholder="Ingrese el monto de la multa">
+                                </div>
+                                <small class="text-muted">El bibliotecario debe ingresar el monto según el valor del libro perdido</small>
+                            </div>
+                            
                             <div class="mb-3">
                                 <label class="form-label">Observaciones</label>
                                 <textarea class="form-control" name="observaciones" rows="2" placeholder="Opcional..."></textarea>
@@ -336,5 +369,60 @@
     document.addEventListener('DOMContentLoaded', function() {
         setupSearch('q', 'tabla-prestamos');
     });
+    
+    // Función para validar formulario antes de enviar
+    function validarFormularioDevolucion(prestamoId) {
+        const estadoFisico = document.getElementById('estadoFisico' + prestamoId).value;
+        const montoDañoInput = document.getElementById('montoDañoInput' + prestamoId);
+        const montoPerdidaInput = document.getElementById('montoPerdidaInput' + prestamoId);
+        
+        // Si está dañado, verificar que tenga monto
+        if (estadoFisico === 'dañado') {
+            if (!montoDañoInput.value || parseFloat(montoDañoInput.value) <= 0) {
+                alert('Debe ingresar un monto válido para la multa por daño.');
+                montoDañoInput.focus();
+                return false;
+            }
+        }
+        
+        // Si está perdido, verificar que tenga monto
+        if (estadoFisico === 'perdido') {
+            if (!montoPerdidaInput.value || parseFloat(montoPerdidaInput.value) <= 0) {
+                alert('Debe ingresar un monto válido para la multa por pérdida.');
+                montoPerdidaInput.focus();
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    // Función para mostrar/ocultar campos de monto según el estado físico
+    function toggleMontoFields(prestamoId) {
+        const estadoFisico = document.getElementById('estadoFisico' + prestamoId).value;
+        const montoDaño = document.getElementById('montoDaño' + prestamoId);
+        const montoPerdida = document.getElementById('montoPerdida' + prestamoId);
+        const montoDañoInput = document.getElementById('montoDañoInput' + prestamoId);
+        const montoPerdidaInput = document.getElementById('montoPerdidaInput' + prestamoId);
+        
+        // Ocultar todos los campos primero y quitar required
+        montoDaño.style.display = 'none';
+        montoPerdida.style.display = 'none';
+        montoDañoInput.required = false;
+        montoPerdidaInput.required = false;
+        
+        // Limpiar valores
+        montoDañoInput.value = '';
+        montoPerdidaInput.value = '';
+        
+        // Mostrar el campo correspondiente y establecer required
+        if (estadoFisico === 'dañado') {
+            montoDaño.style.display = 'block';
+            montoDañoInput.required = true;
+        } else if (estadoFisico === 'perdido') {
+            montoPerdida.style.display = 'block';
+            montoPerdidaInput.required = true;
+        }
+    }
 </script>
 {% endblock %}

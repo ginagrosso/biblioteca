@@ -14,21 +14,20 @@ class ConfiguracionBiblioteca:
     def __init__(self):
         # Solo inicializar una vez
         if not ConfiguracionBiblioteca._inicializado:
-            self.tasa_multa_diaria = 0.50  # $0.50 por día de retraso
+            self.tasa_multa_diaria_sugerida = 0.50  # Sugerencia: $0.50 por día de retraso
             self.dias_prestamo_default = 15  # 15 días de préstamo por defecto
             self.max_prestamos_simultaneos = 3  # Máximo de préstamos activos por socio
-            self.multa_daño_libro = 50.00  # Multa por daño al libro
-            self.multa_perdida_libro = 200.00  # Multa por pérdida del libro
+            # NOTA: Los montos de multas por daño/pérdida ahora los ingresa el bibliotecario dinámicamente
             ConfiguracionBiblioteca._inicializado = True
     
     def calcular_multa_retraso(self, dias_retraso):
         """
-        Calcula el monto de multa por días de retraso.
+        Calcula el monto de multa por días de retraso usando la tasa sugerida.
         """
-        return self.tasa_multa_diaria * dias_retraso
+        return self.tasa_multa_diaria_sugerida * dias_retraso
     
     def __str__(self):
-        return f"Configuración Biblioteca - Tasa multa: ${self.tasa_multa_diaria}/día"
+        return f"Configuración Biblioteca - Tasa multa sugerida: ${self.tasa_multa_diaria_sugerida}/día"
 
 
 # Función auxiliar para obtener la instancia
