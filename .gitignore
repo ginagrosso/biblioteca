@@ -63,5 +63,5 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
-
+ANALISIS_BUENAS_PRACTICAS.md
 
