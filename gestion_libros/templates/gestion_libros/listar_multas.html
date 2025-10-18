@@ -1,0 +1,195 @@
+{% extends 'gestion_libros/base.html' %}
+
+{% block title %}Gestionar Multas{% endblock %}
+
+{% block content %}
+<!-- Header de la página -->
+<div class="page-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="bi bi-cash-coin me-3"></i>Gestionar Multas
+                </h1>
+                <p class="mb-0 opacity-75">Controla y gestiona todas las multas de la biblioteca</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="alert alert-warning mb-0 p-2" style="font-size: 13px;">
+                    <strong>Total pendiente:</strong> ${{ total_pendiente }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Barra de búsqueda -->
+<div class="search-container">
+    <form method="GET" class="row g-3">
+        <div class="col-md-4">
+            <label for="q" class="form-label">
+                <i class="bi bi-search me-1"></i>Buscar por socio
+            </label>
+            <input type="text" 
+                   class="form-control" 
+                   id="q" 
+                   name="q" 
+                   value="{{ query }}" 
+                   placeholder="Nombre, DNI o Nº de socio..."
+                   autocomplete="off">
+        </div>
+        <div class="col-md-2">
+            <label for="estado" class="form-label">
+                <i class="bi bi-toggle-on me-1"></i>Estado
+            </label>
+            <select class="form-select" id="estado" name="estado">
+                <option value="todos" {% if estado_filtro == 'todos' %}selected{% endif %}>Todas</option>
+                <option value="pendientes" {% if estado_filtro == 'pendientes' %}selected{% endif %}>Pendientes</option>
+                <option value="pagadas" {% if estado_filtro == 'pagadas' %}selected{% endif %}>Pagadas</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary me-2">
+                <i class="bi bi-search me-1"></i> Buscar
+            </button>
+            {% if query or estado_filtro != 'todos' %}
+            <a href="{% url 'listar_multas' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-x-circle me-1"></i> Limpiar
+            </a>
+            {% endif %}
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            {% if query or estado_filtro != 'todos' %}
+            <div class="text-muted small">
+                <i class="bi bi-info-circle me-1"></i>
+                {{ total_resultados }} resultado{{ total_resultados|pluralize }}
+            </div>
+            {% endif %}
+        </div>
+    </form>
+</div>
+
+<!-- Contenido principal -->
+<div class="card">
+    <div class="card-body">
+        {% if multas %}
+        <div class="table-responsive">
+            <table class="table table-hover" id="tabla-multas">
+                <thead>
+                    <tr>
+                        <th><i class="bi bi-hash me-1"></i>ID</th>
+                        <th><i class="bi bi-person me-1"></i>Socio</th>
+                        <th><i class="bi bi-card-text me-1"></i>Motivo</th>
+                        <th><i class="bi bi-book me-1"></i>Préstamo</th>
+                        <th><i class="bi bi-cash me-1"></i>Monto</th>
+                        <th><i class="bi bi-calendar me-1"></i>Fecha</th>
+                        <th><i class="bi bi-toggle-on me-1"></i>Estado</th>
+                        <th><i class="bi bi-gear me-1"></i>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for multa in multas %}
+                    <tr>
+                        <td>{{ multa.id }}</td>
+                        <td>
+                            <div>
+                                <strong>{{ multa.socio.nombre }}</strong>
+                                <br>
+                                <small class="text-muted">{{ multa.socio.numero_socio }}</small>
+                            </div>
+                        </td>
+                        <td>
+                            <strong>{{ multa.get_motivo_display }}</strong>
+                            {% if multa.descripcion %}
+                            <br>
+                            <small class="text-muted">{{ multa.descripcion|truncatewords:8 }}</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if multa.prestamo %}
+                            <small>{{ multa.prestamo.ejemplar.libro.titulo|truncatewords:5 }}</small>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong class="text-danger">${{ multa.monto }}</strong>
+                        </td>
+                        <td>{{ multa.fecha|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if multa.pagada %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle me-1"></i>Pagada
+                            </span>
+                            <br>
+                            <small class="text-muted">{{ multa.fecha_pago|date:"d/m/Y" }}</small>
+                            {% else %}
+                            <span class="badge bg-warning">
+                                <i class="bi bi-exclamation-triangle me-1"></i>Pendiente
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if not multa.pagada %}
+                            <form method="POST" action="{% url 'pagar_multa' multa.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" 
+                                        class="btn btn-sm btn-primary"
+                                        onclick="return confirm('¿Confirmar pago de ${{ multa.monto }}?')">
+                                    <i class="bi bi-cash-coin me-1"></i> Pagar
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <div class="text-muted">
+                <i class="bi bi-info-circle me-1"></i>
+                Total: {{ multas.count }} multa{{ multas.count|pluralize }}
+                {% if query or estado_filtro != 'todos' %}
+                encontrada{{ total_resultados|pluralize }}
+                {% endif %}
+            </div>
+            <div>
+                <span class="badge bg-warning p-2">
+                    <i class="bi bi-exclamation-triangle me-1"></i>
+                    Pendientes: ${{ total_pendiente }}
+                </span>
+            </div>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            {% if query or estado_filtro != 'todos' %}
+            <i class="bi bi-search"></i>
+            <h4>No se encontraron resultados</h4>
+            <p class="mb-4">No hay multas que coincidan con tu búsqueda</p>
+            <a href="{% url 'listar_multas' %}" class="btn btn-outline-primary">
+                <i class="bi bi-arrow-left me-1"></i> Ver Todas las Multas
+            </a>
+            {% else %}
+            <i class="bi bi-cash-coin"></i>
+            <h4>No hay multas registradas</h4>
+            <p class="mb-4">¡Excelente! No hay multas en el sistema actualmente</p>
+            <a href="{% url 'listar_prestamos' %}" class="btn btn-primary">
+                <i class="bi bi-arrow-left-right me-1"></i> Ver Préstamos
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Configurar búsqueda en tiempo real
+    document.addEventListener('DOMContentLoaded', function() {
+        setupSearch('q', 'tabla-multas');
+    });
+</script>
+{% endblock %}
+

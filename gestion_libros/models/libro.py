@@ -17,6 +17,11 @@ class Libro(models.Model):
     autor = models.CharField(max_length=100, verbose_name="Autor")
     editorial = models.CharField(max_length=100, blank=True, null=True)
     año_publicacion = models.IntegerField(blank=True, null=True)
+    activo = models.BooleanField(
+        default=True,
+        verbose_name="Activo",
+        help_text="Indica si el libro está activo en el sistema (soft delete)"
+    )
     
     class Meta:
         verbose_name = "Libro"
@@ -28,7 +33,19 @@ class Libro(models.Model):
     
     def ejemplares_disponibles(self):
         """Retorna la cantidad de ejemplares disponibles para préstamo"""
-        return self.ejemplares.filter(estado='disponible').count()
+        return self.ejemplares.filter(estado='disponible', activo=True).count()
+    
+    def dar_de_baja(self):
+        """Marca el libro como inactivo (soft delete)"""
+        self.activo = False
+        self.save()
+        # También damos de baja todos los ejemplares del libro
+        self.ejemplares.filter(activo=True).update(activo=False)
+    
+    def reactivar(self):
+        """Reactiva el libro"""
+        self.activo = True
+        self.save()
 
 
 class Ejemplar(models.Model):
@@ -66,6 +83,11 @@ class Ejemplar(models.Model):
         verbose_name="Fecha de Adquisición"
     )
     observaciones = models.TextField(blank=True, null=True)
+    activo = models.BooleanField(
+        default=True,
+        verbose_name="Activo",
+        help_text="Indica si el ejemplar está activo en el sistema (soft delete)"
+    )
     
     class Meta:
         verbose_name = "Ejemplar"
@@ -77,4 +99,14 @@ class Ejemplar(models.Model):
     
     def esta_disponible(self):
         """Verifica si el ejemplar está disponible para préstamo"""
-        return self.estado == 'disponible'
+        return self.estado == 'disponible' and self.activo
+    
+    def dar_de_baja(self):
+        """Marca el ejemplar como inactivo (soft delete)"""
+        self.activo = False
+        self.save()
+    
+    def reactivar(self):
+        """Reactiva el ejemplar"""
+        self.activo = True
+        self.save()

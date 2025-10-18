@@ -11,18 +11,22 @@ from ..singleton import obtener_configuracion
 def index(request):
     """Vista principal del sistema"""
     context = {
-        'total_libros': Libro.objects.count(),
-        'total_ejemplares': Ejemplar.objects.count(),
+        'total_libros': Libro.objects.filter(activo=True).count(),
+        'total_ejemplares': Ejemplar.objects.filter(activo=True).count(),
         'total_socios': Socio.objects.filter(activo=True).count(),
         'prestamos_activos': Prestamo.objects.filter(fecha_devolucion_real__isnull=True).count(),
-        'ejemplares_disponibles': Ejemplar.objects.filter(estado='disponible').count(),
+        'ejemplares_disponibles': Ejemplar.objects.filter(estado='disponible', activo=True).count(),
+        'multas_pendientes': Multa.objects.filter(pagada=False).count(),
+        'monto_multas_pendientes': Multa.objects.filter(pagada=False).aggregate(
+            total=models.Sum('monto'))['total'] or 0,
     }
     return render(request, 'gestion_libros/index.html', context)
 
 
 def listar_libros(request):
-    """Lista todos los libros disponibles con funcionalidad de búsqueda"""
-    libros = Libro.objects.all()
+    """Lista todos los libros activos con funcionalidad de búsqueda"""
+    libros_todos = Libro.objects.filter(activo=True)  # Para el select del modal
+    libros = libros_todos  # Para la tabla
     query = request.GET.get('q', '').strip()
     filtro_tipo = request.GET.get('filtro', 'todos')
     
@@ -44,7 +48,7 @@ def listar_libros(request):
             )
     
     context = {
-        'libros': libros,
+        'libros': libros,  # Para la tabla (con filtros)
         'query': query,
         'filtro_tipo': filtro_tipo,
         'total_resultados': libros.count()
@@ -417,3 +421,67 @@ def registrar_socio(request):
             return redirect('registrar_socio')
     
     return render(request, 'gestion_libros/registrar_socio.html')
+
+
+# ============================================================
+# PROCESO 4: GESTIÓN DE MULTAS
+# ============================================================
+@login_required
+def listar_multas(request):
+    """
+    Lista todas las multas del sistema con filtros
+    """
+    multas = Multa.objects.all().order_by('-fecha')
+    query = request.GET.get('q', '').strip()
+    estado_filtro = request.GET.get('estado', 'todos')
+    
+    if query:
+        multas = multas.filter(
+            models.Q(socio__nombre__icontains=query) |
+            models.Q(socio__dni__icontains=query) |
+            models.Q(socio__numero_socio__icontains=query)
+        )
+    
+    if estado_filtro == 'pendientes':
+        multas = multas.filter(pagada=False)
+    elif estado_filtro == 'pagadas':
+        multas = multas.filter(pagada=True)
+    
+    context = {
+        'multas': multas,
+        'query': query,
+        'estado_filtro': estado_filtro,
+        'total_resultados': multas.count(),
+        'total_pendiente': multas.filter(pagada=False).aggregate(
+            total=models.Sum('monto'))['total'] or 0
+    }
+    return render(request, 'gestion_libros/listar_multas.html', context)
+
+
+@login_required
+def pagar_multa(request, multa_id):
+    """
+    Marca una multa como pagada
+    """
+    multa = get_object_or_404(Multa, id=multa_id)
+    
+    if request.method == 'POST':
+        if multa.pagada:
+            messages.warning(request, 
+                f'⚠️ <strong>Multa ya pagada</strong><br>'
+                f'Esta multa ya fue marcada como pagada el {multa.fecha_pago.strftime("%d/%m/%Y")}.<br>'
+                f'<small>No se requiere ninguna acción adicional.</small>'
+            )
+        else:
+            multa.marcar_como_pagada()
+            messages.success(request, 
+                f'✅ <strong>¡Multa pagada exitosamente!</strong><br>'
+                f'<strong>Socio:</strong> {multa.socio.nombre}<br>'
+                f'<strong>Monto:</strong> ${multa.monto}<br>'
+                f'<strong>Motivo:</strong> {multa.get_motivo_display()}<br>'
+                f'<small>El socio ahora puede realizar nuevos préstamos si no tiene otras multas pendientes.</small>'
+            )
+        
+        return redirect('listar_multas')
+    
+    return render(request, 'gestion_libros/pagar_multa.html', {'multa': multa})

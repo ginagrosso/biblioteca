@@ -8,169 +8,161 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
         :root {
-            /* Paleta Vintage Biblioteca - Tonos tierra y madera */
-            --primary-color: #8B4513;      /* Marrón silla */
-            --primary-light: #A0522D;      /* Siena tostado */
+            /* Paleta Unificada - Estilo Sistema de Inventario */
+            --primary-color: #8B4513;      /* Marrón principal */
             --primary-dark: #5D2E0F;       /* Marrón oscuro */
-            --secondary-color: #6B5B4D;    /* Taupe */
-            --success-color: #4A6741;      /* Verde bosque */
-            --warning-color: #C19A6B;      /* Dorado viejo */
-            --danger-color: #8B3A3A;       /* Borgoña */
-            --info-color: #5B7C8D;         /* Azul pizarra */
+            --accent-color: #A67C52;       /* Acento suave */
             
-            /* Fondo estilo app de escritorio */
-            --light-bg: #E8DED2;           /* Pergamino claro */
-            --card-bg: #F5F1E8;            /* Papel antiguo */
-            --sidebar-bg: #4A3F35;         /* Madera oscura */
-            --text-primary: #2C2416;       /* Negro sepia */
-            --text-secondary: #6B5B4D;     /* Taupe texto */
-            --border-color: #D4C4B0;       /* Beige oscuro */
+            /* Colores neutros para sistema de inventario */
+            --bg-main: #E8DED2;            /* Fondo principal */
+            --bg-card: #F5F1E8;            /* Tarjetas/paneles */
+            --bg-input: #FDFCFB;           /* Inputs */
+            --bg-navbar: #4A3F35;          /* Barra superior */
+            --bg-toolbar: #DED4C4;         /* Barras de herramientas */
             
-            /* Sombras más sutiles para look desktop */
-            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
-            --shadow-md: 0 2px 6px rgba(0, 0, 0, 0.15);
-            --shadow-lg: 0 4px 12px rgba(0, 0, 0, 0.18);
+            /* Textos - solo dos tonos */
+            --text-primary: #2C2416;       /* Texto principal */
+            --text-muted: #6B5B4D;         /* Texto secundario */
+            
+            /* Bordes y divisores */
+            --border-color: #C9BBA8;       /* Bordes */
+            --border-dark: #B5A28F;        /* Bordes oscuros */
+            
+            /* Estados - tonos neutros */
+            --status-success: #6B7F65;     /* Verde neutro */
+            --status-warning: #A8845A;     /* Amarillo neutro */
+            --status-error: #8B5555;       /* Rojo neutro */
+            --status-info: #6B7885;        /* Azul neutro */
+            
+            /* Sombras sutiles */
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
+            --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.12);
+            --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
         body {
-            background-color: var(--light-bg);
+            background-color: var(--bg-main);
             color: var(--text-primary);
-            font-family: 'Georgia', 'Merriweather', 'Times New Roman', serif;
-            font-size: 15px;
-            line-height: 1.6;
+            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
-        /* Navbar estilo desktop app - barra superior fija */
+        /* Navbar estilo sistema de inventario */
         .navbar {
-            background: var(--sidebar-bg) !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            background: var(--bg-navbar) !important;
+            box-shadow: var(--shadow-md);
             border-bottom: 2px solid var(--primary-color);
-            padding: 0.75rem 1rem;
+            padding: 0.7rem 1rem;
         }
 
         .navbar-brand {
-            font-weight: 700;
-            font-size: 1.35rem;
-            letter-spacing: 0.5px;
-            color: var(--warning-color) !important;
+            font-weight: 600;
+            font-size: 1.25rem;
+            letter-spacing: 0.3px;
+            color: var(--accent-color) !important;
         }
 
-        /* Cards estilo ventanas de aplicación */
+        .navbar .nav-link {
+            color: #C9BBA8 !important;
+            font-size: 14px;
+        }
+
+        .navbar .nav-link:hover {
+            color: var(--accent-color) !important;
+        }
+
+        /* Cards estilo paneles de inventario */
         .card {
-            background-color: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
             box-shadow: var(--shadow-sm);
-            transition: all 0.15s ease;
-        }
-
-        .card:hover {
-            box-shadow: var(--shadow-md);
+            transition: none;
         }
 
         .card-header {
-            background-color: #E0D5C7;
-            border-bottom: 2px solid var(--border-color);
+            background-color: var(--bg-toolbar);
+            border-bottom: 1px solid var(--border-dark);
             font-weight: 600;
-            color: var(--primary-dark);
-            padding: 0.875rem 1.25rem;
+            color: var(--text-primary);
+            padding: 0.75rem 1rem;
+            font-size: 14px;
         }
 
-        /* Botones estilo desktop - más sólidos, menos gradientes */
+        /* Botones unificados - solo marrón principal */
         .btn {
-            border-radius: 4px;
+            border-radius: 3px;
             font-weight: 500;
-            transition: all 0.15s ease;
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            padding: 0.5rem 1rem;
-            font-family: 'Segoe UI', -apple-system, sans-serif;
+            transition: all 0.1s ease;
+            border: 1px solid var(--border-dark);
+            padding: 0.45rem 0.9rem;
+            font-size: 13px;
         }
 
-        .btn-primary {
+        .btn-primary, .btn-success, .btn-info, .btn-warning {
             background: var(--primary-color);
             border-color: var(--primary-dark);
             color: #FFF;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover, .btn-success:hover, .btn-info:hover, .btn-warning:hover {
             background: var(--primary-dark);
             border-color: var(--primary-dark);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-success {
-            background: var(--success-color);
-            border-color: #3d5635;
+            box-shadow: var(--shadow-sm);
             color: #FFF;
-        }
-
-        .btn-success:hover {
-            background: #3d5635;
-            border-color: #2d4125;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-info {
-            background: var(--info-color);
-            border-color: #4a6576;
-            color: #FFF;
-        }
-
-        .btn-info:hover {
-            background: #4a6576;
-            border-color: #3a5566;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .btn-warning {
-            background: var(--warning-color);
-            border-color: #a8845a;
-            color: var(--text-primary);
-        }
-
-        .btn-warning:hover {
-            background: #a8845a;
-            border-color: #8f6d49;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .btn-danger {
-            background: var(--danger-color);
-            border-color: #6d2929;
+            background: var(--status-error);
+            border-color: #6d4040;
             color: #FFF;
         }
 
         .btn-danger:hover {
-            background: #6d2929;
-            border-color: #5d1f1f;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            background: #6d4040;
+            border-color: #5d3030;
+            box-shadow: var(--shadow-sm);
         }
 
-        /* Tablas estilo hoja de cálculo/database */
+        .btn-outline-primary, .btn-outline-success, .btn-outline-info, .btn-outline-warning {
+            background: transparent;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover, .btn-outline-success:hover, .btn-outline-info:hover, .btn-outline-warning:hover {
+            background: var(--primary-color);
+            border-color: var(--primary-color);
+            color: #FFF;
+        }
+
+        /* Tablas estilo inventario/ERP */
         .table {
-            background-color: var(--card-bg);
-            border-radius: 4px;
+            background-color: var(--bg-card);
+            border-radius: 0;
             overflow: hidden;
             border: 1px solid var(--border-color);
+            font-size: 13px;
         }
 
         .table thead th {
-            background-color: var(--primary-color);
-            color: #F5F1E8;
+            background-color: var(--bg-toolbar);
+            color: var(--text-primary);
             border: none;
             font-weight: 600;
-            padding: 0.875rem 1rem;
-            font-family: 'Segoe UI', -apple-system, sans-serif;
-            font-size: 14px;
+            padding: 0.7rem 0.9rem;
+            font-size: 12px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.3px;
+            border-bottom: 2px solid var(--border-dark);
         }
 
         .table tbody td {
-            padding: 0.75rem 1rem;
+            padding: 0.65rem 0.9rem;
             border-color: var(--border-color);
             vertical-align: middle;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .table tbody tr:hover {
@@ -181,202 +173,225 @@
             border-bottom: 1px solid var(--border-color);
         }
 
-        /* Badges más sutiles */
+        /* Badges neutros */
         .badge {
-            border-radius: 3px;
+            border-radius: 2px;
             font-weight: 500;
-            padding: 0.35rem 0.65rem;
-            font-size: 12px;
-            font-family: 'Segoe UI', -apple-system, sans-serif;
+            padding: 0.3rem 0.6rem;
+            font-size: 11px;
         }
 
-        /* Alertas estilo desktop - sin gradientes */
+        .badge.bg-success {
+            background-color: var(--status-success) !important;
+        }
+
+        .badge.bg-warning {
+            background-color: var(--status-warning) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .badge.bg-danger {
+            background-color: var(--status-error) !important;
+        }
+
+        .badge.bg-info {
+            background-color: var(--status-info) !important;
+        }
+
+        /* Alertas simples y neutras */
         .alert {
-            border-radius: 4px;
-            border: 2px solid;
+            border-radius: 3px;
+            border: 1px solid;
             box-shadow: none;
-            font-size: 14px;
+            font-size: 13px;
+            padding: 0.75rem 1rem;
         }
 
         .alert-success {
-            background: #E8F5E9;
-            border-color: var(--success-color);
-            color: #2d4125;
+            background: #EDF0EC;
+            border-color: var(--border-dark);
+            color: var(--text-primary);
         }
 
         .alert-danger {
-            background: #FFEBEE;
-            border-color: var(--danger-color);
-            color: #5d1f1f;
+            background: #F5EEEE;
+            border-color: var(--border-dark);
+            color: var(--text-primary);
         }
 
         .alert-warning {
-            background: #FFF8E1;
-            border-color: var(--warning-color);
-            color: #6d5022;
+            background: #F5F2EC;
+            border-color: var(--border-dark);
+            color: var(--text-primary);
         }
 
         .alert-info {
-            background: #E3F2FD;
-            border-color: var(--info-color);
-            color: #2d4455;
+            background: #EDF1F3;
+            border-color: var(--border-dark);
+            color: var(--text-primary);
         }
 
-        /* Formularios estilo desktop */
+        /* Formularios estilo inventario */
         .form-control, .form-select {
-            border-radius: 4px;
-            border: 2px solid var(--border-color);
-            padding: 0.6rem 0.9rem;
-            transition: all 0.15s ease;
-            background-color: #FDFCFB;
-            font-size: 14px;
+            border-radius: 2px;
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 0.75rem;
+            transition: all 0.1s ease;
+            background-color: var(--bg-input);
+            font-size: 13px;
         }
 
         .form-control:focus, .form-select:focus {
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+            box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.08);
             background-color: #FFF;
+            outline: none;
         }
 
         .form-label {
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 0.4rem;
-            font-size: 13px;
-            font-family: 'Segoe UI', -apple-system, sans-serif;
+            margin-bottom: 0.35rem;
+            font-size: 12px;
         }
 
-        /* Barra de búsqueda estilo toolbar */
+        /* Barra de búsqueda estilo toolbar inventario */
         .search-container {
-            background: #DED4C4;
-            border-radius: 4px;
-            padding: 1.25rem;
-            margin-bottom: 1.25rem;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            background: var(--bg-toolbar);
+            border-radius: 2px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--border-color);
         }
 
-        /* Stats cards estilo paneles desktop */
+        /* Stats cards unificados */
         .stats-card {
-            background: var(--card-bg);
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            transition: all 0.15s ease;
-        }
-
-        .stats-card:hover {
-            box-shadow: var(--shadow-md);
-            border-color: var(--primary-light);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            transition: none;
         }
 
         .stats-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 6px;
+            width: 50px;
+            height: 50px;
+            border-radius: 4px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        /* Footer más discreto */
-        .footer {
-            background: var(--sidebar-bg);
-            color: #C4B5A0;
-            margin-top: 3rem;
-            border-top: 2px solid var(--primary-color);
-        }
-
-        /* Page header estilo título de ventana */
-        .page-header {
-            background: var(--primary-color);
-            color: #F5F1E8;
-            padding: 1.5rem 0;
-            margin-bottom: 1.5rem;
-            border-radius: 0;
-            border-bottom: 3px solid var(--primary-dark);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
-        }
-
-        /* Empty states más sutiles */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--text-secondary);
-            background: #F5F1E8;
-            border: 2px dashed var(--border-color);
-            border-radius: 6px;
-        }
-
-        .empty-state i {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            opacity: 0.4;
+            font-size: 1.4rem;
+            background-color: var(--bg-toolbar);
             color: var(--primary-color);
         }
 
-        /* Spinner más sutil */
+        /* Footer discreto */
+        .footer {
+            background: var(--bg-navbar);
+            color: var(--text-muted);
+            margin-top: 2.5rem;
+            border-top: 1px solid var(--border-dark);
+        }
+
+        /* Page header simple */
+        .page-header {
+            background: var(--primary-color);
+            color: var(--bg-card);
+            padding: 1.25rem 0;
+            margin-bottom: 1.25rem;
+            border-radius: 0;
+            border-bottom: 2px solid var(--primary-dark);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Empty states simples */
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--text-muted);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 2px;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+            opacity: 0.35;
+            color: var(--text-muted);
+        }
+
+        /* Spinner simple */
         .loading-spinner {
             display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(139, 69, 19, 0.2);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(139, 69, 19, 0.15);
             border-radius: 50%;
             border-top-color: var(--primary-color);
-            animation: spin 0.8s linear infinite;
+            animation: spin 0.7s linear infinite;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        /* Transiciones más rápidas estilo desktop */
+        /* Sin transiciones complejas */
         .fade-in {
-            animation: fadeIn 0.3s ease-in;
+            animation: none;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Mejoras adicionales estilo app desktop */
+        /* Títulos simples */
         h1, h2, h3, h4, h5, h6 {
-            color: var(--primary-dark);
+            color: var(--text-primary);
             font-weight: 600;
         }
 
-        h1 { font-size: 1.75rem; }
-        h2 { font-size: 1.5rem; }
-        h3 { font-size: 1.25rem; }
+        h1 { font-size: 1.5rem; }
+        h2 { font-size: 1.3rem; }
+        h3 { font-size: 1.15rem; }
 
         code {
-            background-color: #E8DED2;
-            color: var(--primary-dark);
-            padding: 0.2rem 0.5rem;
-            border-radius: 3px;
-            font-size: 13px;
+            background-color: var(--bg-toolbar);
+            color: var(--text-primary);
+            padding: 0.15rem 0.4rem;
+            border-radius: 2px;
+            font-size: 12px;
             border: 1px solid var(--border-color);
         }
 
-        /* Scrollbar personalizada */
+        /* Scrollbar simple */
         ::-webkit-scrollbar {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
         }
 
         ::-webkit-scrollbar-track {
-            background: #E8DED2;
+            background: var(--bg-main);
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--primary-color);
-            border-radius: 6px;
-            border: 2px solid #E8DED2;
+            background: var(--border-dark);
+            border-radius: 2px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-dark);
+            background: var(--primary-color);
+        }
+
+        /* Contenedor principal */
+        .container {
+            max-width: 1400px;
+        }
+
+        /* Remover animaciones innecesarias */
+        * {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .btn, .form-control, .form-select {
+            transition: all 0.1s ease !important;
         }
     </style>
 </head>
@@ -410,6 +425,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'listar_prestamos' %}">
                             <i class="bi bi-arrow-left-right"></i> Préstamos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'listar_multas' %}">
+                            <i class="bi bi-cash-coin"></i> Multas
                         </a>
                     </li>
                 </ul>

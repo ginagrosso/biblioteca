@@ -3,11 +3,18 @@ Módulo de vistas para el sistema de gestión de biblioteca.
 Organizado por funcionalidad.
 """
 
-from .base import index, listar_libros, listar_socios, listar_prestamos
+from .base import index, listar_libros, listar_socios, listar_prestamos, listar_multas, pagar_multa
 from .prestamo import realizar_prestamo
 from .devolucion import devolver_libro
 from .socio import registrar_socio
-from .libro import registrar_libro, registrar_ejemplar
+from .libro import (
+    registrar_libro, 
+    registrar_ejemplar, 
+    editar_libro, 
+    editar_ejemplar,
+    dar_baja_libro,
+    dar_baja_ejemplar
+)
 
 __all__ = [
     'index',
@@ -19,4 +26,10 @@ __all__ = [
     'registrar_socio',
     'registrar_libro',
     'registrar_ejemplar',
+    'editar_libro',
+    'editar_ejemplar',
+    'dar_baja_libro',
+    'dar_baja_ejemplar',
+    'listar_multas',
+    'pagar_multa',
 ]

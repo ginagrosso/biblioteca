@@ -14,9 +14,9 @@
                 <p class="mb-0 opacity-75">Gestiona los socios registrados en la biblioteca</p>
             </div>
             <div class="col-md-4 text-end">
-                <a href="{% url 'registrar_socio' %}" class="btn btn-light btn-sm">
+                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalSocio" onclick="limpiarModalSocio()">
                     <i class="bi bi-person-plus me-1"></i> Nuevo Socio
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -107,6 +107,12 @@
                         <td>{{ socio.dni }}</td>
                         <td>
                             <strong>{{ socio.nombre }}</strong>
+                            {% if socio.tiene_multas_pendientes %}
+                            <br>
+                            <span class="badge bg-danger" style="font-size: 10px;">
+                                <i class="bi bi-exclamation-circle me-1"></i>Multa: ${{ socio.monto_total_multas }}
+                            </span>
+                            {% endif %}
                         </td>
                         <td>{{ socio.email|default:"—" }}</td>
                         <td>{{ socio.telefono|default:"—" }}</td>
@@ -124,27 +130,19 @@
                         <td>{{ socio.fecha_registro|date:"d/m/Y" }}</td>
                         <td>
                             <div class="btn-group btn-group-sm" role="group">
+                                {% if socio.tiene_multas_pendientes %}
+                                <a href="{% url 'listar_multas' %}?q={{ socio.numero_socio }}&estado=pendientes" 
+                                   class="btn btn-outline-danger" 
+                                   title="Ver multas pendientes">
+                                    <i class="bi bi-cash-coin"></i>
+                                </a>
+                                {% endif %}
                                 <button type="button" 
                                         class="btn btn-outline-info" 
                                         title="Ver detalles"
                                         onclick="alert('Detalles del socio: {{ socio.nombre }}')">
                                     <i class="bi bi-eye"></i>
                                 </button>
-                                {% if socio.activo %}
-                                <button type="button" 
-                                        class="btn btn-outline-warning" 
-                                        title="Desactivar socio"
-                                        onclick="alert('Función de desactivar socio')">
-                                    <i class="bi bi-pause-circle"></i>
-                                </button>
-                                {% else %}
-                                <button type="button" 
-                                        class="btn btn-outline-success" 
-                                        title="Activar socio"
-                                        onclick="alert('Función de activar socio')">
-                                    <i class="bi bi-play-circle"></i>
-                                </button>
-                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -194,10 +192,60 @@
     </div>
 </div>
 
+<!-- Modal Unificado Socio (Crear) -->
+<div class="modal fade" id="modalSocio" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-person-plus me-2"></i>Nuevo Socio</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'registrar_socio' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">DNI *</label>
+                        <input type="text" class="form-control" name="dni" id="socio_dni" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Nombre Completo *</label>
+                        <input type="text" class="form-control" name="nombre" id="socio_nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" name="email" id="socio_email">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" name="telefono" id="socio_telefono">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <textarea class="form-control" name="direccion" id="socio_direccion" rows="2"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     // Configurar búsqueda en tiempo real
     document.addEventListener('DOMContentLoaded', function() {
         setupSearch('q', 'tabla-socios');
     });
+    
+    // Limpiar modal socio
+    function limpiarModalSocio() {
+        document.getElementById('socio_dni').value = '';
+        document.getElementById('socio_nombre').value = '';
+        document.getElementById('socio_email').value = '';
+        document.getElementById('socio_telefono').value = '';
+        document.getElementById('socio_direccion').value = '';
+    }
 </script>
 {% endblock %}

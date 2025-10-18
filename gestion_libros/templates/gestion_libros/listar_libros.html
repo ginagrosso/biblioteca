@@ -15,12 +15,12 @@
             </div>
             <div class="col-md-4 text-end">
                 <div class="d-flex gap-2 justify-content-end">
-                    <a href="{% url 'registrar_libro' %}" class="btn btn-light btn-sm">
+                    <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalLibro" onclick="limpiarModalLibro()">
                         <i class="bi bi-plus-circle me-1"></i> Nuevo Libro
-                    </a>
-                    <a href="{% url 'registrar_ejemplar' %}" class="btn btn-light btn-sm">
+                    </button>
+                    <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalEjemplar" onclick="limpiarModalEjemplar()">
                         <i class="bi bi-plus-circle me-1"></i> Nuevo Ejemplar
-                    </a>
+                    </button>
                 </div>
             </div>
         </div>
@@ -94,12 +94,15 @@
                 </thead>
                 <tbody>
                     {% for libro in libros %}
-                    <tr>
+                    <tr data-bs-toggle="collapse" data-bs-target="#ejemplares-{{ libro.isbn }}" style="cursor: pointer;">
                         <td>
                             <code class="bg-light px-2 py-1 rounded">{{ libro.isbn }}</code>
                         </td>
                         <td>
-                            <strong>{{ libro.titulo }}</strong>
+                            <strong>
+                                <i class="bi bi-chevron-right me-1"></i>
+                                {{ libro.titulo }}
+                            </strong>
                         </td>
                         <td>{{ libro.autor }}</td>
                         <td>{{ libro.editorial|default:"—" }}</td>
@@ -115,19 +118,102 @@
                             </span>
                             {% endif %}
                         </td>
-                        <td>
+                        <td onclick="event.stopPropagation();">
                             <div class="btn-group btn-group-sm" role="group">
-                                <a href="{% url 'registrar_ejemplar' %}?libro={{ libro.isbn }}" 
-                                   class="btn btn-outline-success" 
-                                   title="Agregar ejemplar">
-                                    <i class="bi bi-plus-circle"></i>
-                                </a>
                                 <button type="button" 
-                                        class="btn btn-outline-info" 
-                                        title="Ver detalles"
-                                        onclick="alert('Detalles del libro: {{ libro.titulo }}')">
-                                    <i class="bi bi-eye"></i>
+                                        class="btn btn-outline-success" 
+                                        title="Agregar ejemplar"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalEjemplar"
+                                        onclick="limpiarModalEjemplar('{{ libro.isbn }}')">
+                                    <i class="bi bi-plus-circle"></i>
                                 </button>
+                                <button type="button" 
+                                        class="btn btn-outline-primary" 
+                                        title="Editar libro"
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalLibro"
+                                        onclick="cargarLibroEnModal('{{ libro.isbn }}', '{{ libro.titulo|escapejs }}', '{{ libro.autor|escapejs }}', '{{ libro.editorial|default:''|escapejs }}', '{{ libro.año_publicacion|default:'' }}')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form method="post" action="{% url 'dar_baja_libro' libro.isbn %}" style="display: inline;" 
+                                      onsubmit="return confirm('¿Dar de baja \"{{ libro.titulo|escapejs }}\" y todos sus ejemplares?');">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger" title="Dar de baja">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <!-- Fila expandible para mostrar ejemplares -->
+                    <tr class="collapse" id="ejemplares-{{ libro.isbn }}">
+                        <td colspan="7" style="background-color: var(--bg-toolbar); padding: 0;">
+                            <div class="p-3">
+                                <h6 class="mb-3">
+                                    <i class="bi bi-collection me-2"></i>Ejemplares de este libro
+                                </h6>
+                                {% if libro.ejemplares.all %}
+                                <div class="table-responsive">
+                                    <table class="table table-sm mb-0">
+                                        <thead>
+                                            <tr>
+                                                <th>Código</th>
+                                                <th>Estado</th>
+                                                <th>Fecha Adquisición</th>
+                                                <th>Observaciones</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for ejemplar in libro.ejemplares.all %}
+                                            {% if ejemplar.activo %}
+                                            <tr>
+                                                <td><code>{{ ejemplar.codigo_ejemplar }}</code></td>
+                                                <td>
+                                                    {% if ejemplar.estado == 'disponible' %}
+                                                    <span class="badge bg-success">{{ ejemplar.get_estado_display }}</span>
+                                                    {% elif ejemplar.estado == 'prestado' %}
+                                                    <span class="badge bg-warning">{{ ejemplar.get_estado_display }}</span>
+                                                    {% elif ejemplar.estado == 'mantenimiento' %}
+                                                    <span class="badge bg-info">{{ ejemplar.get_estado_display }}</span>
+                                                    {% else %}
+                                                    <span class="badge bg-danger">{{ ejemplar.get_estado_display }}</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ ejemplar.fecha_adquisicion|date:"d/m/Y" }}</td>
+                                                <td>{{ ejemplar.observaciones|default:"—" }}</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm" role="group">
+                                                        <button type="button" 
+                                                                class="btn btn-outline-primary" 
+                                                                title="Editar ejemplar"
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#modalEjemplar"
+                                                                onclick="cargarEjemplarEnModal('{{ ejemplar.codigo_ejemplar|escapejs }}', '{{ ejemplar.libro.isbn }}', '{{ ejemplar.estado }}', '{{ ejemplar.observaciones|default:''|escapejs }}')">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </button>
+                                                        <form method="post" action="{% url 'dar_baja_ejemplar' ejemplar.codigo_ejemplar %}" style="display: inline;" 
+                                                              onsubmit="return confirm('¿Dar de baja el ejemplar {{ ejemplar.codigo_ejemplar|escapejs }}?');">
+                                                            {% csrf_token %}
+                                                            <button type="submit" class="btn btn-outline-danger" title="Dar de baja">
+                                                                <i class="bi bi-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {% else %}
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    No hay ejemplares registrados para este libro.
+                                </p>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>
@@ -177,10 +263,154 @@
     </div>
 </div>
 
+<!-- Modal Unificado Libro (Crear/Editar) -->
+<div class="modal fade" id="modalLibro" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLibroTitulo"><i class="bi bi-plus-circle me-2"></i>Nuevo Libro</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" id="formLibro">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">ISBN *</label>
+                        <input type="text" class="form-control" name="isbn" id="libro_isbn" required>
+                        <small class="text-muted">Código único del libro</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Título *</label>
+                        <input type="text" class="form-control" name="titulo" id="libro_titulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Autor *</label>
+                        <input type="text" class="form-control" name="autor" id="libro_autor" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Editorial</label>
+                        <input type="text" class="form-control" name="editorial" id="libro_editorial">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Año</label>
+                        <input type="number" class="form-control" name="año_publicacion" id="libro_año" min="1000" max="2100">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Unificado Ejemplar (Crear/Editar) -->
+<div class="modal fade" id="modalEjemplar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEjemplarTitulo"><i class="bi bi-plus-circle me-2"></i>Nuevo Ejemplar</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" id="formEjemplar">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3" id="ejemplar_libro_select_container">
+                        <label class="form-label">Libro *</label>
+                        <select class="form-select" name="libro_isbn" id="ejemplar_libro_select" required>
+                            <option value="">Selecciona un libro...</option>
+                            {% for libro in libros %}
+                            <option value="{{ libro.isbn }}">{{ libro.titulo }} - {{ libro.autor }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3" id="ejemplar_codigo_container" style="display: none;">
+                        <label class="form-label">Código</label>
+                        <input type="text" class="form-control" id="ejemplar_codigo_display" disabled>
+                        <small class="text-muted">Se genera automáticamente</small>
+                    </div>
+                    <div class="mb-3" id="ejemplar_estado_container" style="display: none;">
+                        <label class="form-label">Estado *</label>
+                        <select class="form-select" name="estado" id="ejemplar_estado">
+                            <option value="disponible">Disponible</option>
+                            <option value="prestado">Prestado</option>
+                            <option value="mantenimiento">En Mantenimiento</option>
+                            <option value="perdido">Perdido</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Observaciones</label>
+                        <textarea class="form-control" name="observaciones" id="ejemplar_obs" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     // Configurar búsqueda en tiempo real
     document.addEventListener('DOMContentLoaded', function() {
         setupSearch('q', 'tabla-libros');
     });
+    
+    // Limpiar modal libro para CREAR
+    function limpiarModalLibro() {
+        document.getElementById('modalLibroTitulo').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Nuevo Libro';
+        document.getElementById('formLibro').action = '{% url "registrar_libro" %}';
+        document.getElementById('libro_isbn').value = '';
+        document.getElementById('libro_isbn').disabled = false;
+        document.getElementById('libro_titulo').value = '';
+        document.getElementById('libro_autor').value = '';
+        document.getElementById('libro_editorial').value = '';
+        document.getElementById('libro_año').value = '';
+    }
+    
+    // Cargar datos del libro para EDITAR
+    function cargarLibroEnModal(isbn, titulo, autor, editorial, año) {
+        document.getElementById('modalLibroTitulo').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Libro';
+        document.getElementById('formLibro').action = '/libros/' + isbn + '/editar/';
+        document.getElementById('libro_isbn').value = isbn;
+        document.getElementById('libro_isbn').disabled = true;  // No permitir cambiar ISBN al editar
+        document.getElementById('libro_titulo').value = titulo;
+        document.getElementById('libro_autor').value = autor;
+        document.getElementById('libro_editorial').value = editorial;
+        document.getElementById('libro_año').value = año;
+    }
+    
+    // Limpiar modal ejemplar para CREAR
+    function limpiarModalEjemplar(isbnPreselect = '') {
+        document.getElementById('modalEjemplarTitulo').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Nuevo Ejemplar';
+        document.getElementById('formEjemplar').action = '{% url "registrar_ejemplar" %}';
+        
+        // Mostrar selector de libro, ocultar campos de edición
+        document.getElementById('ejemplar_libro_select_container').style.display = 'block';
+        document.getElementById('ejemplar_codigo_container').style.display = 'none';
+        document.getElementById('ejemplar_estado_container').style.display = 'none';
+        
+        document.getElementById('ejemplar_libro_select').value = isbnPreselect;
+        document.getElementById('ejemplar_libro_select').disabled = false;
+        document.getElementById('ejemplar_obs').value = '';
+    }
+    
+    // Cargar datos del ejemplar para EDITAR
+    function cargarEjemplarEnModal(codigo, libroIsbn, estado, obs) {
+        document.getElementById('modalEjemplarTitulo').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Ejemplar';
+        document.getElementById('formEjemplar').action = '/ejemplares/' + codigo + '/editar/';
+        
+        // Ocultar selector de libro, mostrar campos de edición
+        document.getElementById('ejemplar_libro_select_container').style.display = 'none';
+        document.getElementById('ejemplar_codigo_container').style.display = 'block';
+        document.getElementById('ejemplar_estado_container').style.display = 'block';
+        
+        document.getElementById('ejemplar_codigo_display').value = codigo;
+        document.getElementById('ejemplar_estado').value = estado;
+        document.getElementById('ejemplar_obs').value = obs;
+    }
 </script>
 {% endblock %}

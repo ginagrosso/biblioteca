@@ -96,7 +96,7 @@ def realizar_prestamo(request):
     
     # GET - Mostrar formulario
     socios_activos = Socio.objects.filter(activo=True)
-    ejemplares_disponibles = Ejemplar.objects.filter(estado='disponible').select_related('libro')
+    ejemplares_disponibles = Ejemplar.objects.filter(estado='disponible', activo=True).select_related('libro')
     
     return render(request, 'gestion_libros/realizar_prestamo.html', {
         'socios': socios_activos,
