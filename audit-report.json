@@ -1,0 +1,10 @@
+{
+  "dependencies": [
+    {
+      "name": "pip",
+      "version": "25.0.1",
+      "id": "GHSA-4xh5-x5gv-qwph",
+      "fixVersions": []
+    }
+  ]
+}

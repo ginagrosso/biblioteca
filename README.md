@@ -78,6 +78,13 @@ Aunque no fue un requisito funcional explícito, la aplicación debe garantizar 
 
 El proyecto solo requiere dependencias mínimas para funcionar con SQLite:
 
-```text
 Django~=4.2.0
-requests
+requests.
+
+### **Actualización de Dependencias**
+
+Para actualizar las dependencias:
+```bash
+pip list --outdated
+pip install --upgrade Django reportlab
+pip freeze > requirements.txt
