@@ -140,7 +140,8 @@
                                 <button type="button" 
                                         class="btn btn-outline-info" 
                                         title="Ver detalles"
-                                        onclick="alert('Detalles del socio: {{ socio.nombre }}')">
+                                        data-nombre="{{ socio.nombre }}"
+                                        onclick="alert(`Detalles del socio: ${this.dataset.nombre}`)">
                                     <i class="bi bi-eye"></i>
                                 </button>
                             </div>
@@ -160,9 +161,9 @@
                 {% endif %}
             </div>
             <div>
-                <a href="{% url 'registrar_socio' %}" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSocio" onclick="limpiarModalSocio()">
                     <i class="bi bi-person-plus me-2"></i> Registrar Nuevo Socio
-                </a>
+                </button>
             </div>
         </div>
         {% else %}
@@ -175,17 +176,17 @@
                 <a href="{% url 'listar_socios' %}" class="btn btn-outline-primary">
                     <i class="bi bi-arrow-left me-1"></i> Ver Todos los Socios
                 </a>
-                <a href="{% url 'registrar_socio' %}" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSocio" onclick="limpiarModalSocio()">
                     <i class="bi bi-person-plus me-1"></i> Registrar Socio
-                </a>
+                </button>
             </div>
             {% else %}
             <i class="bi bi-people"></i>
             <h4>No hay socios registrados</h4>
             <p class="mb-4">Comienza registrando el primer socio en tu biblioteca</p>
-            <a href="{% url 'registrar_socio' %}" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalSocio" onclick="limpiarModalSocio()">
                 <i class="bi bi-person-plus me-2"></i> Registrar Primer Socio
-            </a>
+            </button>
             {% endif %}
         </div>
         {% endif %}
@@ -234,18 +235,14 @@
 </div>
 
 <script>
-    // Configurar búsqueda en tiempo real
+    /**
+     * Scripts específicos para la página de socios
+     * La función limpiarModalSocio ya está en modals.js (compartida)
+     */
+    
+    // Configurar búsqueda en tiempo real al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
         setupSearch('q', 'tabla-socios');
     });
-    
-    // Limpiar modal socio
-    function limpiarModalSocio() {
-        document.getElementById('socio_dni').value = '';
-        document.getElementById('socio_nombre').value = '';
-        document.getElementById('socio_email').value = '';
-        document.getElementById('socio_telefono').value = '';
-        document.getElementById('socio_direccion').value = '';
-    }
 </script>
 {% endblock %}

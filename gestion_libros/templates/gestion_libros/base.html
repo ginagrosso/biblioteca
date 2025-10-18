@@ -4,464 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Sistema de Biblioteca{% endblock %}</title>
+    
+    <!-- CSS Externos -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Estilos personalizados (separados para mejor mantenimiento y cache) -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'gestion_libros/css/styles.css' %}">
+    
+    <!-- Estilos inline solo para casos muy específicos (si los necesitás) -->
     <style>
-        :root {
-            /* Paleta unificada - verde salvia para acciones positivas */
-            --primary: #6B8E7F;           /* Verde salvia */
-            --primary-dark: #4A6A5D;      /* Verde oscuro */
-            --accent: #C4A574;            /* Beige/dorado */
-            
-            --bg-body: #FAF8F5;
-            --bg-white: #FFFFFF;
-            --bg-light: #F5F2ED;
-            
-            --text-dark: #2C2416;
-            --text-muted: #6B5B4D;
-            
-            --border: #E5DDD1;
-            --shadow: 0 2px 12px rgba(0,0,0,0.06);
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
-            
-            /* Alertas pastel llamativas */
-            --alert-success-bg: #D1F2EB;
-            --alert-success-border: #5A9E8B;
-            --alert-success-text: #155724;
-            
-            --alert-error-bg: #FADBD8;
-            --alert-error-border: #E06055;
-            --alert-error-text: #721C24;
-            
-            --alert-warning-bg: #FFF4E5;
-            --alert-warning-border: #F0AD4E;
-            --alert-warning-text: #856404;
-            
-            --alert-info-bg: #D6EAF8;
-            --alert-info-border: #5DADE2;
-            --alert-info-text: #0C5460;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: var(--bg-body);
-            color: var(--text-dark);
-            font-family: 'Inter', sans-serif;
-            font-size: 15px;
-            line-height: 1.6;
-        }
-
-        /* Header decorativo con imagen de fondo y línea ondulada */
-        .library-hero {
-            background: linear-gradient(rgba(44, 36, 22, 0.70), rgba(44, 36, 22, 0.88)),
-                        url('/static/gestion_libros/images/libros_antiguos.jpg'),
-                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><path d="M0,160 Q150,140 300,160 T600,160 T900,160 T1200,160 L1200,200 L0,200 Z" fill="%238B4513" opacity="0.3"/></svg>');
-            background-size: cover, cover, contain;
-            background-position: center, center, bottom;
-            background-repeat: no-repeat, no-repeat, no-repeat;
-            color: white;
-            padding: 2rem 0;
-            box-shadow: var(--shadow);
-        }
-
-        .library-hero h1 {
-            font-family: 'Crimson Text', serif;
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 0;
-            letter-spacing: 0.5px;
-        }
-
-        .library-hero p {
-            font-size: 0.95rem;
-            opacity: 0.9;
-            font-style: italic;
-            margin-bottom: 0;
-        }
-
-        /* Navbar simple y elegante */
-        .navbar {
-            background: var(--bg-white) !important;
-            border-bottom: 1px solid var(--border);
-            box-shadow: var(--shadow-sm);
-            padding: 0.75rem 1rem;
-        }
-
-        .navbar-brand {
-            font-weight: 600;
-            color: var(--primary) !important;
-            font-size: 1.1rem;
-        }
-
-        .navbar-brand i {
-            color: var(--accent);
-            margin-right: 0.5rem;
-        }
-
-        .navbar .nav-link {
-            color: var(--text-dark) !important;
-            font-size: 0.95rem;
-            padding: 0.5rem 1rem !important;
-            transition: all 0.2s;
-            border-radius: 6px;
-        }
-
-        .navbar .nav-link:hover {
-            color: var(--primary) !important;
-            background: var(--bg-light);
-        }
-
-        .navbar .nav-link i {
-            margin-right: 0.4rem;
-            font-size: 1.05rem;
-        }
-
-        /* Main content */
-        .main-content {
-            padding: 2rem 0;
-            min-height: calc(100vh - 400px);
-        }
-
-        /* Cards profesionales */
-        .card {
-            background: var(--bg-white);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            box-shadow: var(--shadow-sm);
-            margin-bottom: 1.5rem;
-        }
-
-        .card-header {
-            background: var(--bg-white);
-            border-bottom: 2px solid var(--border);
-            padding: 1.25rem 1.5rem;
-            font-weight: 600;
-            color: var(--text-dark);
-            border-radius: 12px 12px 0 0 !important;
-        }
-
-        .card-body {
-            padding: 1.5rem;
-        }
-
-        /* Botones unificados */
-        .btn {
-            border-radius: 8px;
-            font-weight: 500;
-            padding: 0.6rem 1.3rem;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            border: none;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow);
-        }
-
-        .btn-light {
-            background: var(--bg-light);
-            border: 1px solid var(--border);
-            color: var(--text-dark);
-        }
-
-        .btn-light:hover {
-            background: var(--bg-white);
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        .btn-success {
-            background: #5D7052;
-            border: none;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #8B4049;
-            border: none;
-            color: white;
-        }
-
-        .btn-outline-primary {
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            background: transparent;
-        }
-
-        .btn-outline-primary:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-outline-success {
-            border: 1px solid #5D7052;
-            color: #5D7052;
-            background: transparent;
-        }
-
-        .btn-outline-danger {
-            border: 1px solid #8B4049;
-            color: #8B4049;
-            background: transparent;
-        }
-
-        .btn-sm {
-            padding: 0.4rem 0.9rem;
-            font-size: 0.875rem;
-        }
-
-        .btn-group-sm .btn {
-            padding: 0.35rem 0.7rem;
-            font-size: 0.85rem;
-        }
-
-        /* Tablas elegantes */
-        .table {
-            background: var(--bg-white);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .table thead th {
-            background: var(--bg-light);
-            color: var(--text-dark);
-            border: none;
-            font-weight: 600;
-            padding: 1rem;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .table tbody td {
-            padding: 1rem;
-            border-color: var(--border);
-            vertical-align: middle;
-        }
-
-        .table tbody tr {
-            transition: background 0.2s;
-        }
-
-        .table tbody tr:hover {
-            background: var(--bg-light);
-        }
-
-        /* Badges consistentes */
-        .badge {
-            border-radius: 6px;
-            padding: 0.35rem 0.75rem;
-            font-weight: 500;
-            font-size: 0.85rem;
-        }
-
-        .badge.bg-success {
-            background: #5D7052 !important;
-        }
-
-        .badge.bg-warning {
-            background: #B8860B !important;
-        }
-
-        .badge.bg-danger {
-            background: #8B4049 !important;
-        }
-
-        /* Formularios */
-        .form-control, .form-select {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.65rem 1rem;
-            font-size: 0.95rem;
-            transition: all 0.2s;
-        }
-
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
-        }
-
-        .form-label {
-            font-weight: 500;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        /* Search container - más compacto */
-        .search-container {
-            background: var(--bg-white);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .search-container .form-label {
-            font-size: 0.85rem;
-            margin-bottom: 0.35rem;
-        }
-
-        /* Page header - compacto y acorde al principal */
-        .page-header {
-            background: linear-gradient(135deg, #3E2723 0%, #2C1E1A 100%);
-            color: white;
-            padding: 1.25rem 0;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow-sm);
-            border-bottom: 2px solid var(--primary);
-        }
-
-        .page-header h1 {
-            font-family: 'Crimson Text', serif;
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .page-header p {
-            opacity: 0.85;
-            font-size: 0.9rem;
-            margin-bottom: 0;
-        }
-
-        /* Stats cards */
-        .stats-card {
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            transition: all 0.3s;
-        }
-
-        .stats-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-
-        .stats-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 12px;
-            background: var(--bg-light);
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        /* Alerts */
-        /* Alertas pastel llamativas */
-        .alert {
-            border-radius: 8px;
-            border-left: 4px solid;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
-            font-weight: 500;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .alert i {
-            font-size: 1.1rem;
-            margin-right: 0.5rem;
-        }
-
-        .alert-success {
-            background-color: var(--alert-success-bg);
-            border-left-color: var(--alert-success-border);
-            color: var(--alert-success-text);
-        }
-
-        .alert-danger,
-        .alert-error {
-            background-color: var(--alert-error-bg);
-            border-left-color: var(--alert-error-border);
-            color: var(--alert-error-text);
-        }
-        
-        .alert-warning {
-            background-color: var(--alert-warning-bg);
-            border-left-color: var(--alert-warning-border);
-            color: var(--alert-warning-text);
-        }
-        
-        .alert-info {
-            background-color: var(--alert-info-bg);
-            border-left-color: var(--alert-info-border);
-            color: var(--alert-info-text);
-        }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--text-muted);
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            opacity: 0.3;
-            margin-bottom: 1rem;
-        }
-
-        /* Modals */
-        .modal-content {
-            border-radius: 12px;
-            border: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        }
-
-        .modal-header {
-            background: var(--bg-light);
-            border-bottom: 2px solid var(--border);
-            border-radius: 12px 12px 0 0;
-            padding: 1.25rem 1.5rem;
-        }
-
-        .modal-title {
-            font-weight: 600;
-            color: var(--text-dark);
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--bg-light);
-            color: var(--text-muted);
-            padding: 2rem 0;
-            margin-top: 3rem;
-            border-top: 1px solid var(--border);
-            text-align: center;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .library-hero h1 {
-                font-size: 1.75rem;
-            }
-            
-            .page-header h1 {
-                font-size: 1.5rem;
-            }
-        }
-
-        /* Utility classes */
-        .text-primary { color: var(--primary) !important; }
-        .text-muted { color: var(--text-muted) !important; }
-        .bg-light-custom { background: var(--bg-light) !important; }
+        /* Acá podés agregar estilos muy específicos de alguna página en particular */
     </style>
 </head>
 <body>
@@ -553,9 +110,18 @@
         </div>
     </footer>
 
+    <!-- Bootstrap JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Funciones JavaScript personalizadas (separadas para evitar duplicación) -->
+    <script src="{% static 'gestion_libros/js/modals.js' %}"></script>
+    
+    <!-- Scripts de utilidad general -->
     <script>
-        // Auto-hide success alerts
+        /**
+         * Oculta automáticamente las alertas de éxito después de 5 segundos
+         * Las alertas de error quedan visibles para que el usuario las lea bien
+         */
         document.addEventListener('DOMContentLoaded', function() {
             setTimeout(function() {
                 const successAlerts = document.querySelectorAll('.alert-success');
@@ -563,10 +129,15 @@
                     const bsAlert = new bootstrap.Alert(alert);
                     bsAlert.close();
                 });
-            }, 5000);
+            }, 5000);  // 5 segundos
         });
 
-        // Setup search functionality
+        /**
+         * Función de búsqueda en tiempo real para tablas
+         * Filtra las filas de la tabla a medida que escribís
+         * @param {string} inputId - ID del campo de búsqueda
+         * @param {string} tableId - ID de la tabla a filtrar
+         */
         function setupSearch(inputId, tableId) {
             const input = document.getElementById(inputId);
             const table = document.getElementById(tableId);
@@ -576,6 +147,7 @@
                     const filter = this.value.toLowerCase();
                     const rows = table.getElementsByTagName('tr');
                     
+                    // Empezamos desde 1 para saltar el header
                     for (let i = 1; i < rows.length; i++) {
                         const text = rows[i].textContent.toLowerCase();
                         rows[i].style.display = text.includes(filter) ? '' : 'none';

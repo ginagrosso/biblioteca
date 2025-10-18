@@ -1,3 +1,10 @@
+# Dependencias del proyecto de biblioteca
+# Solo incluimos las que realmente usamos en el código
+
+# Framework web principal
 Django==4.2.16
-requests==2.32.3
+
+# Generación de PDFs para comprobantes (multas y préstamos)
 reportlab==4.4.4
+
+# NOTA: 'requests' estaba listado antes pero no se usa en el proyecto, así que lo eliminé

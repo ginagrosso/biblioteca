@@ -1,0 +1,560 @@
+/**
+ * Estilos principales del sistema de biblioteca
+ * Este archivo contiene todos los estilos CSS para mantener el base.html más limpio
+ * y mejorar el tiempo de carga (el navegador cachea este archivo)
+ */
+
+/* ============================================================
+   VARIABLES CSS - Paleta de colores y configuración global
+   ============================================================ */
+
+:root {
+    /* Colores principales - Verde salvia para acciones positivas */
+    --primary: #6B8E7F;           /* Verde salvia - botones principales */
+    --primary-dark: #4A6A5D;      /* Verde oscuro - hover de botones */
+    --accent: #C4A574;            /* Beige/dorado - detalles decorativos */
+    
+    /* Fondos */
+    --bg-body: #FAF8F5;           /* Fondo general de la página */
+    --bg-white: #FFFFFF;          /* Fondo de cards y modales */
+    --bg-light: #F5F2ED;          /* Fondo alternativo para secciones */
+    
+    /* Textos */
+    --text-dark: #2C2416;         /* Texto principal */
+    --text-muted: #6B5B4D;        /* Texto secundario/deshabilitado */
+    
+    /* Bordes y sombras */
+    --border: #E5DDD1;            /* Color de bordes */
+    --shadow: 0 2px 12px rgba(0,0,0,0.06);     /* Sombra para cards */
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);   /* Sombra sutil */
+    
+    /* Alertas pastel - colores más vivos para que se noten */
+    --alert-success-bg: #D1F2EB;
+    --alert-success-border: #5A9E8B;
+    --alert-success-text: #155724;
+    
+    --alert-error-bg: #FADBD8;
+    --alert-error-border: #E06055;
+    --alert-error-text: #721C24;
+    
+    --alert-warning-bg: #FFF4E5;
+    --alert-warning-border: #F0AD4E;
+    --alert-warning-text: #856404;
+    
+    --alert-info-bg: #D6EAF8;
+    --alert-info-border: #5DADE2;
+    --alert-info-text: #0C5460;
+}
+
+/* ============================================================
+   RESET Y CONFIGURACIÓN BASE
+   ============================================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: var(--bg-body);
+    color: var(--text-dark);
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* ============================================================
+   HEADER DECORATIVO (Hero con imagen de libros antiguos)
+   ============================================================ */
+
+.library-hero {
+    /* Usamos 3 capas: gradiente oscuro + imagen + línea ondulada decorativa */
+    background: linear-gradient(rgba(44, 36, 22, 0.70), rgba(44, 36, 22, 0.88)),
+                url('/static/gestion_libros/images/libros_antiguos.jpg'),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><path d="M0,160 Q150,140 300,160 T600,160 T900,160 T1200,160 L1200,200 L0,200 Z" fill="%238B4513" opacity="0.3"/></svg>');
+    background-size: cover, cover, contain;
+    background-position: center, center, bottom;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    color: white;
+    padding: 2rem 0;
+    box-shadow: var(--shadow);
+}
+
+.library-hero h1 {
+    font-family: 'Crimson Text', serif;  /* Fuente elegante tipo libro */
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 0;
+    letter-spacing: 0.5px;
+}
+
+.library-hero p {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    font-style: italic;
+    margin-bottom: 0;
+}
+
+/* ============================================================
+   NAVBAR (Barra de navegación)
+   ============================================================ */
+
+.navbar {
+    background: var(--bg-white) !important;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    padding: 0.75rem 1rem;
+}
+
+.navbar-brand {
+    font-weight: 600;
+    color: var(--primary) !important;
+    font-size: 1.1rem;
+}
+
+.navbar-brand i {
+    color: var(--accent);
+    margin-right: 0.5rem;
+}
+
+.navbar .nav-link {
+    color: var(--text-dark) !important;
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.2s;
+    border-radius: 6px;
+}
+
+.navbar .nav-link:hover {
+    color: var(--primary) !important;
+    background: var(--bg-light);
+}
+
+.navbar .nav-link i {
+    margin-right: 0.4rem;
+    font-size: 1.05rem;
+}
+
+/* ============================================================
+   CONTENIDO PRINCIPAL
+   ============================================================ */
+
+.main-content {
+    padding: 2rem 0;
+    min-height: calc(100vh - 400px);  /* Para que el footer siempre esté abajo */
+}
+
+/* ============================================================
+   CARDS (Tarjetas para contenido)
+   ============================================================ */
+
+.card {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background: var(--bg-white);
+    border-bottom: 2px solid var(--border);
+    padding: 1.25rem 1.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+    border-radius: 12px 12px 0 0 !important;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+/* Cards de estadísticas (usadas en el dashboard) */
+.stat-card {
+    border: 1px solid var(--border);
+    background: var(--bg-white);
+    transition: all 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* ============================================================
+   BOTONES
+   ============================================================ */
+
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    padding: 0.6rem 1.3rem;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+/* Botón principal (verde salvia) */
+.btn-primary {
+    background: var(--primary);
+    border: none;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+}
+
+/* Botón claro (para acciones secundarias) */
+.btn-light {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    color: var(--text-dark);
+}
+
+.btn-light:hover {
+    background: var(--bg-white);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+/* Botón de éxito */
+.btn-success {
+    background: #5D7052;
+    border: none;
+    color: white;
+}
+
+/* Botón de peligro */
+.btn-danger {
+    background: #8B4049;
+    border: none;
+    color: white;
+}
+
+/* Botones con borde (outline) */
+.btn-outline-primary {
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    background: transparent;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-outline-success {
+    border: 1px solid #5D7052;
+    color: #5D7052;
+    background: transparent;
+}
+
+.btn-outline-danger {
+    border: 1px solid #8B4049;
+    color: #8B4049;
+    background: transparent;
+}
+
+/* Botones pequeños */
+.btn-sm {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.875rem;
+}
+
+.btn-group-sm .btn {
+    padding: 0.35rem 0.7rem;
+    font-size: 0.85rem;
+}
+
+/* ============================================================
+   TABLAS
+   ============================================================ */
+
+.table {
+    background: var(--bg-white);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Encabezados de tabla */
+.table thead th {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    border: none;
+    font-weight: 600;
+    padding: 1rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;  /* Títulos en mayúsculas */
+    letter-spacing: 0.5px;
+}
+
+/* Celdas de tabla */
+.table tbody td {
+    padding: 1rem;
+    border-color: var(--border);
+    vertical-align: middle;
+}
+
+/* Hover en filas de tabla */
+.table tbody tr {
+    transition: background 0.2s;
+}
+
+.table tbody tr:hover {
+    background: var(--bg-light);
+}
+
+/* ============================================================
+   BADGES (Etiquetas de estado)
+   ============================================================ */
+
+.badge {
+    border-radius: 6px;
+    padding: 0.35rem 0.75rem;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.badge.bg-success {
+    background: #5D7052 !important;
+}
+
+.badge.bg-warning {
+    background: #B8860B !important;
+}
+
+.badge.bg-danger {
+    background: #8B4049 !important;
+}
+
+/* ============================================================
+   FORMULARIOS
+   ============================================================ */
+
+.form-control, .form-select {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.65rem 1rem;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+/* Focus en campos de formulario (cuando hacés clic) */
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);  /* Sombra suave alrededor */
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+}
+
+/* ============================================================
+   BARRA DE BÚSQUEDA
+   ============================================================ */
+
+.search-container {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.search-container .form-label {
+    font-size: 0.85rem;
+    margin-bottom: 0.35rem;
+}
+
+/* ============================================================
+   HEADERS DE PÁGINA (Catálogo, Socios, Préstamos, etc)
+   ============================================================ */
+
+.page-header {
+    background: linear-gradient(135deg, #3E2723 0%, #2C1E1A 100%);
+    color: white;
+    padding: 1.25rem 0;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border-bottom: 2px solid var(--primary);
+}
+
+.page-header h1 {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.page-header p {
+    opacity: 0.85;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+/* ============================================================
+   TARJETAS DE ESTADÍSTICAS (Dashboard)
+   ============================================================ */
+
+.stats-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: all 0.3s;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: var(--bg-light);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* ============================================================
+   ALERTAS (Mensajes de éxito/error/warning)
+   ============================================================ */
+
+.alert {
+    border-radius: 8px;
+    border-left: 4px solid;  /* Barra de color a la izquierda */
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+}
+
+.alert i {
+    font-size: 1.1rem;
+    margin-right: 0.5rem;
+}
+
+/* Alerta de éxito (verde pastel) */
+.alert-success {
+    background-color: var(--alert-success-bg);
+    border-left-color: var(--alert-success-border);
+    color: var(--alert-success-text);
+}
+
+/* Alerta de error (rojo pastel) */
+.alert-danger,
+.alert-error {
+    background-color: var(--alert-error-bg);
+    border-left-color: var(--alert-error-border);
+    color: var(--alert-error-text);
+}
+
+/* Alerta de advertencia (amarillo pastel) */
+.alert-warning {
+    background-color: var(--alert-warning-bg);
+    border-left-color: var(--alert-warning-border);
+    color: var(--alert-warning-text);
+}
+
+/* Alerta informativa (azul pastel) */
+.alert-info {
+    background-color: var(--alert-info-bg);
+    border-left-color: var(--alert-info-border);
+    color: var(--alert-info-text);
+}
+
+/* Alert personalizado para bienvenida */
+.alert-custom {
+    background: linear-gradient(135deg, var(--bg-light) 0%, var(--bg-white) 100%);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--primary);
+}
+
+/* ============================================================
+   ESTADO VACÍO (cuando no hay resultados)
+   ============================================================ */
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--text-muted);
+}
+
+.empty-state i {
+    font-size: 4rem;
+    opacity: 0.3;
+    margin-bottom: 1rem;
+}
+
+/* ============================================================
+   MODALES (Pop-ups para crear/editar)
+   ============================================================ */
+
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.modal-header {
+    background: var(--bg-light);
+    border-bottom: 2px solid var(--border);
+    border-radius: 12px 12px 0 0;
+    padding: 1.25rem 1.5rem;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+
+.footer {
+    background: var(--bg-light);
+    color: var(--text-muted);
+    padding: 2rem 0;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+}
+
+/* ============================================================
+   RESPONSIVE (para celulares/tablets)
+   ============================================================ */
+
+@media (max-width: 768px) {
+    .library-hero h1 {
+        font-size: 1.75rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* ============================================================
+   CLASES AUXILIARES (utilities)
+   ============================================================ */
+
+.text-primary { color: var(--primary) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.bg-light-custom { background: var(--bg-light) !important; }
+
+/* Título de sección */
+.section-title {
+    font-family: 'Crimson Text', serif;
+    color: var(--text-dark);
+}
+

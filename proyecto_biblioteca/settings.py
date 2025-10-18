@@ -54,7 +54,8 @@ ROOT_URLCONF = 'proyecto_biblioteca.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Incluir la carpeta templates/ en la raíz para los templates de error (404.html, 500.html)
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -116,6 +117,16 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# Carpeta donde se recopilan todos los archivos estáticos cuando ejecutás collectstatic
+# Esto es necesario para producción, pero en desarrollo no hace falta usarlo
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# Carpetas adicionales donde Django busca archivos estáticos
+# (además de las carpetas static/ de cada app)
+STATICFILES_DIRS = [
+    # Acá podés agregar carpetas extra si las necesitás
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

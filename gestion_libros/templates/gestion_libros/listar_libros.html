@@ -133,11 +133,16 @@
                                         title="Editar libro"
                                         data-bs-toggle="modal" 
                                         data-bs-target="#modalLibro"
-                                        onclick="cargarLibroEnModal('{{ libro.isbn }}', '{{ libro.titulo|escapejs }}', '{{ libro.autor|escapejs }}', '{{ libro.editorial|default:''|escapejs }}', '{{ libro.año_publicacion|default:'' }}')">
+                                        data-isbn="{{ libro.isbn }}"
+                                        data-titulo="{{ libro.titulo }}"
+                                        data-autor="{{ libro.autor }}"
+                                        data-editorial="{{ libro.editorial|default:'' }}"
+                                        data-anio="{{ libro.año_publicacion|default:'' }}"
+                                        onclick="cargarLibroEnModal(this.dataset.isbn, this.dataset.titulo, this.dataset.autor, this.dataset.editorial, this.dataset.anio)">
                                     <i class="bi bi-pencil"></i>
                                 </button>
                                 <form method="post" action="{% url 'dar_baja_libro' libro.isbn %}" style="display: inline;" 
-                                      onsubmit="return confirm('¿Dar de baja \"{{ libro.titulo|escapejs }}\" y todos sus ejemplares?');">
+                                      onsubmit="return confirm(`¿Dar de baja &quot;{{ libro.titulo|escapejs }}&quot; y todos sus ejemplares?`);">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-outline-danger" title="Dar de baja">
                                         <i class="bi bi-trash"></i>
@@ -190,11 +195,15 @@
                                                                 title="Editar ejemplar"
                                                                 data-bs-toggle="modal" 
                                                                 data-bs-target="#modalEjemplar"
-                                                                onclick="cargarEjemplarEnModal('{{ ejemplar.codigo_ejemplar|escapejs }}', '{{ ejemplar.libro.isbn }}', '{{ ejemplar.estado }}', '{{ ejemplar.observaciones|default:''|escapejs }}')">
+                                                                data-codigo="{{ ejemplar.codigo_ejemplar }}"
+                                                                data-isbn="{{ ejemplar.libro.isbn }}"
+                                                                data-estado="{{ ejemplar.estado }}"
+                                                                data-obs="{{ ejemplar.observaciones|default:'' }}"
+                                                                onclick="cargarEjemplarEnModal(this.dataset.codigo, this.dataset.isbn, this.dataset.estado, this.dataset.obs)">
                                                             <i class="bi bi-pencil"></i>
                                                         </button>
                                                         <form method="post" action="{% url 'dar_baja_ejemplar' ejemplar.codigo_ejemplar %}" style="display: inline;" 
-                                                              onsubmit="return confirm('¿Dar de baja el ejemplar {{ ejemplar.codigo_ejemplar|escapejs }}?');">
+                                                              onsubmit="return confirm(`¿Dar de baja el ejemplar {{ ejemplar.codigo_ejemplar|escapejs }}?`);">
                                                             {% csrf_token %}
                                                             <button type="submit" class="btn btn-outline-danger" title="Dar de baja">
                                                                 <i class="bi bi-trash"></i>
@@ -231,9 +240,9 @@
                 {% endif %}
             </div>
             <div>
-                <a href="{% url 'registrar_libro' %}" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalLibro" onclick="limpiarModalLibro()">
                     <i class="bi bi-plus-circle me-2"></i> Agregar Nuevo Libro
-                </a>
+                </button>
             </div>
         </div>
         {% else %}
@@ -246,17 +255,17 @@
                 <a href="{% url 'listar_libros' %}" class="btn btn-outline-primary">
                     <i class="bi bi-arrow-left me-1"></i> Ver Todos los Libros
                 </a>
-                <a href="{% url 'registrar_libro' %}" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalLibro" onclick="limpiarModalLibro()">
                     <i class="bi bi-plus-circle me-1"></i> Agregar Libro
-                </a>
+                </button>
             </div>
             {% else %}
             <i class="bi bi-book"></i>
             <h4>No hay libros en el catálogo</h4>
             <p class="mb-4">Comienza agregando el primer libro a tu biblioteca</p>
-            <a href="{% url 'registrar_libro' %}" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalLibro" onclick="limpiarModalLibro()">
                 <i class="bi bi-plus-circle me-2"></i> Agregar Primer Libro
-            </a>
+            </button>
             {% endif %}
         </div>
         {% endif %}
@@ -354,71 +363,14 @@
 </div>
 
 <script>
-    // Configurar búsqueda en tiempo real
+    /**
+     * Scripts específicos para la página de libros
+     * Las funciones de modales ya están en modals.js (compartido con otras páginas)
+     */
+    
+    // Configurar búsqueda en tiempo real al cargar la página
     document.addEventListener('DOMContentLoaded', function() {
         setupSearch('q', 'tabla-libros');
     });
-    
-    // Limpiar modal libro para CREAR
-    function limpiarModalLibro() {
-        document.getElementById('modalLibroTitulo').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Nuevo Libro';
-        document.getElementById('formLibro').action = '{% url "registrar_libro" %}';
-        document.getElementById('libro_isbn').value = '';
-        document.getElementById('libro_isbn').disabled = false;
-        document.getElementById('libro_titulo').value = '';
-        document.getElementById('libro_autor').value = '';
-        document.getElementById('libro_editorial').value = '';
-        document.getElementById('libro_año').value = '';
-    }
-    
-    // Cargar datos del libro para EDITAR
-    function cargarLibroEnModal(isbn, titulo, autor, editorial, año) {
-        document.getElementById('modalLibroTitulo').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Libro';
-        document.getElementById('formLibro').action = '/libros/' + isbn + '/editar/';
-        document.getElementById('libro_isbn').value = isbn;
-        document.getElementById('libro_isbn').disabled = true;  // No permitir cambiar ISBN al editar
-        document.getElementById('libro_titulo').value = titulo;
-        document.getElementById('libro_autor').value = autor;
-        document.getElementById('libro_editorial').value = editorial;
-        document.getElementById('libro_año').value = año;
-    }
-    
-    // Limpiar modal ejemplar para CREAR
-    function limpiarModalEjemplar(isbnPreselect = '') {
-        document.getElementById('modalEjemplarTitulo').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Nuevo Ejemplar';
-        document.getElementById('formEjemplar').action = '{% url "registrar_ejemplar" %}';
-        
-        // Mostrar selector de libro, ocultar campos de edición
-        document.getElementById('ejemplar_libro_select_container').style.display = 'block';
-        document.getElementById('ejemplar_codigo_container').style.display = 'none';
-        document.getElementById('ejemplar_estado_container').style.display = 'none';
-        
-        // Restaurar el required del selector de libro cuando se crea
-        document.getElementById('ejemplar_libro_select').required = true;
-        
-        document.getElementById('ejemplar_libro_select').value = isbnPreselect;
-        document.getElementById('ejemplar_libro_select').disabled = false;
-        document.getElementById('ejemplar_obs').value = '';
-    }
-    
-    // Cargar datos del ejemplar para EDITAR
-    function cargarEjemplarEnModal(codigo, libroIsbn, estado, obs) {
-        document.getElementById('modalEjemplarTitulo').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Ejemplar';
-        // Construir la URL correctamente
-        const baseUrl = window.location.origin;
-        document.getElementById('formEjemplar').action = baseUrl + '/ejemplares/' + encodeURIComponent(codigo) + '/editar/';
-        
-        // Ocultar selector de libro, mostrar campos de edición
-        document.getElementById('ejemplar_libro_select_container').style.display = 'none';
-        document.getElementById('ejemplar_codigo_container').style.display = 'block';
-        document.getElementById('ejemplar_estado_container').style.display = 'block';
-        
-        // Quitar el required del selector de libro cuando se edita
-        document.getElementById('ejemplar_libro_select').required = false;
-        
-        document.getElementById('ejemplar_codigo_display').value = codigo;
-        document.getElementById('ejemplar_estado').value = estado;
-        document.getElementById('ejemplar_obs').value = obs;
-    }
 </script>
 {% endblock %}

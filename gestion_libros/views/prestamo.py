@@ -15,25 +15,33 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def realizar_prestamo(request):
     """
-    Proceso de préstamo de un libro:
-    1. Verificar si el libro está disponible
-    2. Registrar el préstamo
-    3. Cambiar el estado del ejemplar a 'prestado'
+    PROCESO 1: Préstamo de un Libro (según diagrama de actividad)
+    
+    Pasos del proceso:
+    1. Validar que el socio esté activo
+    2. Verificar que no tenga multas pendientes
+    3. Verificar que el ejemplar esté disponible
+    4. Verificar que el socio no exceda el límite de préstamos simultáneos
+    5. Crear el préstamo con fecha de devolución calculada
+    6. Cambiar el estado del ejemplar a 'prestado'
     """
     if request.method == 'POST':
         socio_id = request.POST.get('socio_id')
         ejemplar_id = request.POST.get('ejemplar_id')
         
         try:
+            # Buscar el socio y ejemplar en la base de datos
             socio = Socio.objects.get(dni=socio_id)
             ejemplar = Ejemplar.objects.get(codigo_ejemplar=ejemplar_id)
             
-            # Validación 1: Socio activo
+            # === VALIDACIONES ANTES DE PRESTAR ===
+            
+            # Validación 1: Socio activo (no dado de baja)
             if not socio.activo:
                 messages.error(request, f'El socio {socio.nombre} no está activo.')
                 return redirect('realizar_prestamo')
             
-            # Validación 2: Multas pendientes
+            # Validación 2: Multas pendientes (regla de negocio importante)
             if socio.tiene_multas_pendientes():
                 messages.error(
                     request, 
@@ -42,7 +50,7 @@ def realizar_prestamo(request):
                 )
                 return redirect('realizar_prestamo')
             
-            # Validación 3: Ejemplar disponible
+            # Validación 3: Ejemplar disponible (puede estar prestado, en mantenimiento, etc)
             if not ejemplar.esta_disponible():
                 messages.error(
                     request, 
@@ -51,10 +59,10 @@ def realizar_prestamo(request):
                 )
                 return redirect('realizar_prestamo')
             
-            # Obtener configuración singleton
+            # Obtener configuración global (Singleton) para las reglas de negocio
             config = obtener_configuracion()
             
-            # Validación 4: Límite de préstamos simultáneos
+            # Validación 4: Límite de préstamos simultáneos (ej: máximo 3 a la vez)
             prestamos_activos = socio.prestamos_activos().count()
             if prestamos_activos >= config.max_prestamos_simultaneos:
                 messages.error(
@@ -64,15 +72,28 @@ def realizar_prestamo(request):
                 )
                 return redirect('realizar_prestamo')
             
-            # Crear el préstamo
-            fecha_devolucion = timezone.now().date() + timedelta(days=config.dias_prestamo_default)
+            # === REGISTRAR EL PRÉSTAMO ===
+            
+            # Obtener los días de préstamo del formulario (por defecto 15 si no viene o es inválido)
+            try:
+                dias_prestamo = int(request.POST.get('dias_prestamo', config.dias_prestamo_default))
+                # Validar que esté en un rango razonable (1 a 90 días)
+                if dias_prestamo < 1 or dias_prestamo > 90:
+                    dias_prestamo = config.dias_prestamo_default
+            except (ValueError, TypeError):
+                dias_prestamo = config.dias_prestamo_default
+            
+            # Calcular fecha de devolución (hoy + días indicados por el bibliotecario)
+            fecha_devolucion = timezone.now().date() + timedelta(days=dias_prestamo)
+            
+            # Crear el registro del préstamo en la base de datos
             prestamo = Prestamo.objects.create(
                 socio=socio,
                 ejemplar=ejemplar,
                 fecha_devolucion_prevista=fecha_devolucion
             )
             
-            # Cambiar estado del ejemplar a 'prestado'
+            # Cambiar el estado del ejemplar a 'prestado' (ya no está disponible)
             ejemplar.estado = 'prestado'
             ejemplar.save()
             
@@ -81,6 +102,7 @@ def realizar_prestamo(request):
                 f'✓ Préstamo realizado exitosamente.<br>'
                 f'Libro: {ejemplar.libro.titulo}<br>'
                 f'Socio: {socio.nombre}<br>'
+                f'Días de préstamo: {dias_prestamo}<br>'
                 f'Devolución prevista: {fecha_devolucion.strftime("%d/%m/%Y")}'
             )
             return redirect('listar_prestamos')

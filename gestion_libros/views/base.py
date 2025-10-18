@@ -1,3 +1,9 @@
+"""
+Vistas principales del sistema de biblioteca.
+Este archivo maneja las páginas de listado (catálogo, socios, préstamos, multas)
+y las operaciones básicas como préstamos y pagos de multas.
+"""
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils import timezone
@@ -25,12 +31,17 @@ def index(request):
 
 @login_required
 def listar_libros(request):
-    """Lista todos los libros activos con funcionalidad de búsqueda"""
-    libros_todos = Libro.objects.filter(activo=True)  # Para el select del modal
-    libros = libros_todos  # Para la tabla
+    """
+    Lista todos los libros activos con funcionalidad de búsqueda.
+    Permite filtrar por ISBN, título, autor o editorial.
+    También muestra los ejemplares de cada libro (expandibles).
+    """
+    libros_todos = Libro.objects.filter(activo=True)  # Para el select del modal de ejemplares
+    libros = libros_todos  # Empezamos con todos, luego filtramos si hay búsqueda
     query = request.GET.get('q', '').strip()
     filtro_tipo = request.GET.get('filtro', 'todos')
     
+    # Si hay búsqueda, filtrar según el tipo seleccionado
     if query:
         if filtro_tipo == 'isbn':
             libros = libros.filter(isbn__icontains=query)
@@ -40,7 +51,7 @@ def listar_libros(request):
             libros = libros.filter(autor__icontains=query)
         elif filtro_tipo == 'editorial':
             libros = libros.filter(editorial__icontains=query)
-        else:  # 'todos' - búsqueda general
+        else:  # 'todos' - busca en todos los campos a la vez
             libros = libros.filter(
                 models.Q(isbn__icontains=query) |
                 models.Q(titulo__icontains=query) |

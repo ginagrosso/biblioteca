@@ -1,0 +1,40 @@
+{% extends 'gestion_libros/base.html' %}
+
+{% block title %}Página no encontrada - 404{% endblock %}
+
+{% block content %}
+<!-- Mensaje de error 404 con estilo amigable -->
+<div class="container">
+    <div class="empty-state" style="padding: 6rem 2rem;">
+        <i class="bi bi-exclamation-triangle-fill" style="font-size: 6rem; color: var(--alert-warning-border); opacity: 0.7;"></i>
+        <h1 class="mt-4 mb-3" style="font-family: 'Crimson Text', serif; color: var(--text-dark); font-size: 2.5rem;">
+            404 - Página no encontrada
+        </h1>
+        <p class="text-muted mb-4" style="font-size: 1.1rem;">
+            Lo sentimos, la página que estás buscando no existe o fue movida.
+        </p>
+        
+        <!-- Botones de navegación útiles -->
+        <div class="d-flex gap-3 justify-content-center mt-4">
+            <a href="{% url 'index' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-house-door me-2"></i> Volver al Inicio
+            </a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'listar_libros' %}" class="btn btn-light btn-lg">
+                <i class="bi bi-book me-2"></i> Ver Catálogo
+            </a>
+            {% endif %}
+        </div>
+        
+        <!-- Mensaje adicional si no está logueado -->
+        {% if not user.is_authenticated %}
+        <div class="alert alert-info mt-5 d-inline-block" style="max-width: 600px;">
+            <i class="bi bi-info-circle me-2"></i>
+            Si querés acceder al sistema, primero tenés que 
+            <a href="{% url 'login' %}" class="alert-link">iniciar sesión</a>.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

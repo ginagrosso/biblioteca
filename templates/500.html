@@ -1,0 +1,36 @@
+{% extends 'gestion_libros/base.html' %}
+
+{% block title %}Error del servidor - 500{% endblock %}
+
+{% block content %}
+<!-- Mensaje de error 500 con estilo amigable -->
+<div class="container">
+    <div class="empty-state" style="padding: 6rem 2rem;">
+        <i class="bi bi-exclamation-octagon-fill" style="font-size: 6rem; color: var(--alert-error-border); opacity: 0.7;"></i>
+        <h1 class="mt-4 mb-3" style="font-family: 'Crimson Text', serif; color: var(--text-dark); font-size: 2.5rem;">
+            500 - Error del servidor
+        </h1>
+        <p class="text-muted mb-4" style="font-size: 1.1rem;">
+            Ups, algo salió mal en nuestro servidor. Estamos trabajando para solucionarlo.
+        </p>
+        
+        <!-- Sugerencias para el usuario -->
+        <div class="alert alert-warning d-inline-block" style="max-width: 700px; text-align: left;">
+            <strong><i class="bi bi-lightbulb me-2"></i>¿Qué podés hacer?</strong>
+            <ul class="mt-3 mb-2">
+                <li>Intentá recargar la página en unos minutos</li>
+                <li>Volvé a la página principal y probá de nuevo</li>
+                <li>Si el problema persiste, contactá al administrador del sistema</li>
+            </ul>
+        </div>
+        
+        <!-- Botón para volver -->
+        <div class="mt-4">
+            <a href="{% url 'index' %}" class="btn btn-primary btn-lg">
+                <i class="bi bi-house-door me-2"></i> Volver al Inicio
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

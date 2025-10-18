@@ -300,9 +300,24 @@
                         <small class="text-warning">No hay ejemplares disponibles</small>
                         {% endif %}
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label">
+                            <i class="bi bi-calendar-range me-1"></i>Días de préstamo
+                        </label>
+                        <input type="number" 
+                               class="form-control" 
+                               name="dias_prestamo" 
+                               value="15" 
+                               min="1" 
+                               max="90"
+                               required>
+                        <small class="text-muted">
+                            Por defecto: 15 días. Podés cambiarlo según el caso (máx. 90 días)
+                        </small>
+                    </div>
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle me-1"></i>
-                        El préstamo se registrará con fecha de hoy y devolución en 15 días.
+                        El préstamo se registrará con fecha de hoy. La fecha de devolución se calculará según los días indicados.
                     </div>
                 </div>
                 <div class="modal-footer">
