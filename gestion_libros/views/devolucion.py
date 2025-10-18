@@ -132,16 +132,5 @@ def devolver_libro(request, prestamo_id):
         
         return redirect('listar_prestamos')
     
-    # GET - Mostrar formulario de devolución
-    config = obtener_configuracion()
-    context = {
-        'prestamo': prestamo,
-        'dias_transcurridos': (timezone.now().date() - prestamo.fecha_inicio.date()).days,
-        'tiene_retraso': prestamo.tiene_retraso(),
-        'dias_retraso': prestamo.dias_retraso() if prestamo.tiene_retraso() else 0,
-        'multa_estimada_retraso': config.calcular_multa_retraso(prestamo.dias_retraso()) if prestamo.tiene_retraso() else 0,
-        'multa_daño': config.multa_daño_libro,
-        'multa_perdida': config.multa_perdida_libro,
-    }
-    
-    return render(request, 'gestion_libros/devolver_libro.html', context)
+    # Si es GET, redirigir
+    return redirect('listar_prestamos')

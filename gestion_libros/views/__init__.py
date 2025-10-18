@@ -15,6 +15,7 @@ from .libro import (
     dar_baja_libro,
     dar_baja_ejemplar
 )
+from .pdf import generar_comprobante_multa, generar_comprobante_prestamo
 
 __all__ = [
     'index',
@@ -32,4 +33,6 @@ __all__ = [
     'dar_baja_ejemplar',
     'listar_multas',
     'pagar_multa',
+    'generar_comprobante_multa',
+    'generar_comprobante_prestamo',
 ]

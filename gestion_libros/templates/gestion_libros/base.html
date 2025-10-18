@@ -6,415 +6,490 @@
     <title>{% block title %}Sistema de Biblioteca{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Paleta Unificada - Estilo Sistema de Inventario */
-            --primary-color: #8B4513;      /* Marrón principal */
-            --primary-dark: #5D2E0F;       /* Marrón oscuro */
-            --accent-color: #A67C52;       /* Acento suave */
+            /* Paleta unificada - verde salvia para acciones positivas */
+            --primary: #6B8E7F;           /* Verde salvia */
+            --primary-dark: #4A6A5D;      /* Verde oscuro */
+            --accent: #C4A574;            /* Beige/dorado */
             
-            /* Colores neutros para sistema de inventario */
-            --bg-main: #E8DED2;            /* Fondo principal */
-            --bg-card: #F5F1E8;            /* Tarjetas/paneles */
-            --bg-input: #FDFCFB;           /* Inputs */
-            --bg-navbar: #4A3F35;          /* Barra superior */
-            --bg-toolbar: #DED4C4;         /* Barras de herramientas */
+            --bg-body: #FAF8F5;
+            --bg-white: #FFFFFF;
+            --bg-light: #F5F2ED;
             
-            /* Textos - solo dos tonos */
-            --text-primary: #2C2416;       /* Texto principal */
-            --text-muted: #6B5B4D;         /* Texto secundario */
+            --text-dark: #2C2416;
+            --text-muted: #6B5B4D;
             
-            /* Bordes y divisores */
-            --border-color: #C9BBA8;       /* Bordes */
-            --border-dark: #B5A28F;        /* Bordes oscuros */
+            --border: #E5DDD1;
+            --shadow: 0 2px 12px rgba(0,0,0,0.06);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04);
             
-            /* Estados - tonos neutros */
-            --status-success: #6B7F65;     /* Verde neutro */
-            --status-warning: #A8845A;     /* Amarillo neutro */
-            --status-error: #8B5555;       /* Rojo neutro */
-            --status-info: #6B7885;        /* Azul neutro */
+            /* Alertas pastel llamativas */
+            --alert-success-bg: #D1F2EB;
+            --alert-success-border: #5A9E8B;
+            --alert-success-text: #155724;
             
-            /* Sombras sutiles */
-            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.08);
-            --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.12);
-            --shadow-lg: 0 4px 8px rgba(0, 0, 0, 0.15);
+            --alert-error-bg: #FADBD8;
+            --alert-error-border: #E06055;
+            --alert-error-text: #721C24;
+            
+            --alert-warning-bg: #FFF4E5;
+            --alert-warning-border: #F0AD4E;
+            --alert-warning-text: #856404;
+            
+            --alert-info-bg: #D6EAF8;
+            --alert-info-border: #5DADE2;
+            --alert-info-text: #0C5460;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            background-color: var(--bg-main);
-            color: var(--text-primary);
-            font-family: 'Segoe UI', -apple-system, system-ui, sans-serif;
-            font-size: 14px;
-            line-height: 1.5;
+            background: var(--bg-body);
+            color: var(--text-dark);
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
         }
 
-        /* Navbar estilo sistema de inventario */
+        /* Header decorativo con imagen de fondo y línea ondulada */
+        .library-hero {
+            background: linear-gradient(rgba(44, 36, 22, 0.70), rgba(44, 36, 22, 0.88)),
+                        url('/static/gestion_libros/images/libros_antiguos.jpg'),
+                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 200"><path d="M0,160 Q150,140 300,160 T600,160 T900,160 T1200,160 L1200,200 L0,200 Z" fill="%238B4513" opacity="0.3"/></svg>');
+            background-size: cover, cover, contain;
+            background-position: center, center, bottom;
+            background-repeat: no-repeat, no-repeat, no-repeat;
+            color: white;
+            padding: 2rem 0;
+            box-shadow: var(--shadow);
+        }
+
+        .library-hero h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0;
+            letter-spacing: 0.5px;
+        }
+
+        .library-hero p {
+            font-size: 0.95rem;
+            opacity: 0.9;
+            font-style: italic;
+            margin-bottom: 0;
+        }
+
+        /* Navbar simple y elegante */
         .navbar {
-            background: var(--bg-navbar) !important;
-            box-shadow: var(--shadow-md);
-            border-bottom: 2px solid var(--primary-color);
-            padding: 0.7rem 1rem;
+            background: var(--bg-white) !important;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            padding: 0.75rem 1rem;
         }
 
         .navbar-brand {
             font-weight: 600;
-            font-size: 1.25rem;
-            letter-spacing: 0.3px;
-            color: var(--accent-color) !important;
+            color: var(--primary) !important;
+            font-size: 1.1rem;
+        }
+
+        .navbar-brand i {
+            color: var(--accent);
+            margin-right: 0.5rem;
         }
 
         .navbar .nav-link {
-            color: #C9BBA8 !important;
-            font-size: 14px;
+            color: var(--text-dark) !important;
+            font-size: 0.95rem;
+            padding: 0.5rem 1rem !important;
+            transition: all 0.2s;
+            border-radius: 6px;
         }
 
         .navbar .nav-link:hover {
-            color: var(--accent-color) !important;
+            color: var(--primary) !important;
+            background: var(--bg-light);
         }
 
-        /* Cards estilo paneles de inventario */
+        .navbar .nav-link i {
+            margin-right: 0.4rem;
+            font-size: 1.05rem;
+        }
+
+        /* Main content */
+        .main-content {
+            padding: 2rem 0;
+            min-height: calc(100vh - 400px);
+        }
+
+        /* Cards profesionales */
         .card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
             box-shadow: var(--shadow-sm);
-            transition: none;
+            margin-bottom: 1.5rem;
         }
 
         .card-header {
-            background-color: var(--bg-toolbar);
-            border-bottom: 1px solid var(--border-dark);
+            background: var(--bg-white);
+            border-bottom: 2px solid var(--border);
+            padding: 1.25rem 1.5rem;
             font-weight: 600;
-            color: var(--text-primary);
-            padding: 0.75rem 1rem;
-            font-size: 14px;
+            color: var(--text-dark);
+            border-radius: 12px 12px 0 0 !important;
         }
 
-        /* Botones unificados - solo marrón principal */
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Botones unificados */
         .btn {
-            border-radius: 3px;
+            border-radius: 8px;
             font-weight: 500;
-            transition: all 0.1s ease;
-            border: 1px solid var(--border-dark);
-            padding: 0.45rem 0.9rem;
-            font-size: 13px;
+            padding: 0.6rem 1.3rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
         }
 
-        .btn-primary, .btn-success, .btn-info, .btn-warning {
-            background: var(--primary-color);
-            border-color: var(--primary-dark);
-            color: #FFF;
+        .btn-primary {
+            background: var(--primary);
+            border: none;
+            color: white;
         }
 
-        .btn-primary:hover, .btn-success:hover, .btn-info:hover, .btn-warning:hover {
+        .btn-primary:hover {
             background: var(--primary-dark);
-            border-color: var(--primary-dark);
-            box-shadow: var(--shadow-sm);
-            color: #FFF;
+            transform: translateY(-1px);
+            box-shadow: var(--shadow);
+        }
+
+        .btn-light {
+            background: var(--bg-light);
+            border: 1px solid var(--border);
+            color: var(--text-dark);
+        }
+
+        .btn-light:hover {
+            background: var(--bg-white);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background: #5D7052;
+            border: none;
+            color: white;
         }
 
         .btn-danger {
-            background: var(--status-error);
-            border-color: #6d4040;
-            color: #FFF;
+            background: #8B4049;
+            border: none;
+            color: white;
         }
 
-        .btn-danger:hover {
-            background: #6d4040;
-            border-color: #5d3030;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .btn-outline-primary, .btn-outline-success, .btn-outline-info, .btn-outline-warning {
+        .btn-outline-primary {
+            border: 1px solid var(--primary);
+            color: var(--primary);
             background: transparent;
-            border-color: var(--primary-color);
-            color: var(--primary-color);
         }
 
-        .btn-outline-primary:hover, .btn-outline-success:hover, .btn-outline-info:hover, .btn-outline-warning:hover {
-            background: var(--primary-color);
-            border-color: var(--primary-color);
-            color: #FFF;
+        .btn-outline-primary:hover {
+            background: var(--primary);
+            color: white;
         }
 
-        /* Tablas estilo inventario/ERP */
+        .btn-outline-success {
+            border: 1px solid #5D7052;
+            color: #5D7052;
+            background: transparent;
+        }
+
+        .btn-outline-danger {
+            border: 1px solid #8B4049;
+            color: #8B4049;
+            background: transparent;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.9rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-group-sm .btn {
+            padding: 0.35rem 0.7rem;
+            font-size: 0.85rem;
+        }
+
+        /* Tablas elegantes */
         .table {
-            background-color: var(--bg-card);
-            border-radius: 0;
+            background: var(--bg-white);
+            border-radius: 8px;
             overflow: hidden;
-            border: 1px solid var(--border-color);
-            font-size: 13px;
         }
 
         .table thead th {
-            background-color: var(--bg-toolbar);
-            color: var(--text-primary);
+            background: var(--bg-light);
+            color: var(--text-dark);
             border: none;
             font-weight: 600;
-            padding: 0.7rem 0.9rem;
-            font-size: 12px;
+            padding: 1rem;
+            font-size: 0.9rem;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
-            border-bottom: 2px solid var(--border-dark);
+            letter-spacing: 0.5px;
         }
 
         .table tbody td {
-            padding: 0.65rem 0.9rem;
-            border-color: var(--border-color);
+            padding: 1rem;
+            border-color: var(--border);
             vertical-align: middle;
-            font-size: 13px;
-        }
-
-        .table tbody tr:hover {
-            background-color: #EBE4D9;
         }
 
         .table tbody tr {
-            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
         }
 
-        /* Badges neutros */
+        .table tbody tr:hover {
+            background: var(--bg-light);
+        }
+
+        /* Badges consistentes */
         .badge {
-            border-radius: 2px;
+            border-radius: 6px;
+            padding: 0.35rem 0.75rem;
             font-weight: 500;
-            padding: 0.3rem 0.6rem;
-            font-size: 11px;
+            font-size: 0.85rem;
         }
 
         .badge.bg-success {
-            background-color: var(--status-success) !important;
+            background: #5D7052 !important;
         }
 
         .badge.bg-warning {
-            background-color: var(--status-warning) !important;
-            color: var(--text-primary) !important;
+            background: #B8860B !important;
         }
 
         .badge.bg-danger {
-            background-color: var(--status-error) !important;
+            background: #8B4049 !important;
         }
 
-        .badge.bg-info {
-            background-color: var(--status-info) !important;
-        }
-
-        /* Alertas simples y neutras */
-        .alert {
-            border-radius: 3px;
-            border: 1px solid;
-            box-shadow: none;
-            font-size: 13px;
-            padding: 0.75rem 1rem;
-        }
-
-        .alert-success {
-            background: #EDF0EC;
-            border-color: var(--border-dark);
-            color: var(--text-primary);
-        }
-
-        .alert-danger {
-            background: #F5EEEE;
-            border-color: var(--border-dark);
-            color: var(--text-primary);
-        }
-
-        .alert-warning {
-            background: #F5F2EC;
-            border-color: var(--border-dark);
-            color: var(--text-primary);
-        }
-
-        .alert-info {
-            background: #EDF1F3;
-            border-color: var(--border-dark);
-            color: var(--text-primary);
-        }
-
-        /* Formularios estilo inventario */
+        /* Formularios */
         .form-control, .form-select {
-            border-radius: 2px;
-            border: 1px solid var(--border-color);
-            padding: 0.5rem 0.75rem;
-            transition: all 0.1s ease;
-            background-color: var(--bg-input);
-            font-size: 13px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.65rem 1rem;
+            font-size: 0.95rem;
+            transition: all 0.2s;
         }
 
         .form-control:focus, .form-select:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(139, 69, 19, 0.08);
-            background-color: #FFF;
-            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
         }
 
         .form-label {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 0.35rem;
-            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
         }
 
-        /* Barra de búsqueda estilo toolbar inventario */
+        /* Search container - más compacto */
         .search-container {
-            background: var(--bg-toolbar);
-            border-radius: 2px;
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
             padding: 1rem;
             margin-bottom: 1rem;
-            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.08);
-            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .search-container .form-label {
+            font-size: 0.85rem;
+            margin-bottom: 0.35rem;
         }
 
-        /* Stats cards unificados */
+        /* Page header - compacto y acorde al principal */
+        .page-header {
+            background: linear-gradient(135deg, #3E2723 0%, #2C1E1A 100%);
+            color: white;
+            padding: 1.25rem 0;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .page-header h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-header p {
+            opacity: 0.85;
+            font-size: 0.9rem;
+            margin-bottom: 0;
+        }
+
+        /* Stats cards */
         .stats-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            transition: none;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
         .stats-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 4px;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: var(--bg-light);
+            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
-            background-color: var(--bg-toolbar);
-            color: var(--primary-color);
+            font-size: 1.5rem;
         }
 
-        /* Footer discreto */
-        .footer {
-            background: var(--bg-navbar);
-            color: var(--text-muted);
-            margin-top: 2.5rem;
-            border-top: 1px solid var(--border-dark);
-        }
-
-        /* Page header simple */
-        .page-header {
-            background: var(--primary-color);
-            color: var(--bg-card);
-            padding: 1.25rem 0;
-            margin-bottom: 1.25rem;
-            border-radius: 0;
-            border-bottom: 2px solid var(--primary-dark);
+        /* Alerts */
+        /* Alertas pastel llamativas */
+        .alert {
+            border-radius: 8px;
+            border-left: 4px solid;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
             box-shadow: var(--shadow-sm);
         }
+        
+        .alert i {
+            font-size: 1.1rem;
+            margin-right: 0.5rem;
+        }
 
-        /* Empty states simples */
+        .alert-success {
+            background-color: var(--alert-success-bg);
+            border-left-color: var(--alert-success-border);
+            color: var(--alert-success-text);
+        }
+
+        .alert-danger,
+        .alert-error {
+            background-color: var(--alert-error-bg);
+            border-left-color: var(--alert-error-border);
+            color: var(--alert-error-text);
+        }
+        
+        .alert-warning {
+            background-color: var(--alert-warning-bg);
+            border-left-color: var(--alert-warning-border);
+            color: var(--alert-warning-text);
+        }
+        
+        .alert-info {
+            background-color: var(--alert-info-bg);
+            border-left-color: var(--alert-info-border);
+            color: var(--alert-info-text);
+        }
+
+        /* Empty state */
         .empty-state {
             text-align: center;
-            padding: 2.5rem 1rem;
+            padding: 4rem 2rem;
             color: var(--text-muted);
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 2px;
         }
 
         .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 0.75rem;
-            opacity: 0.35;
-            color: var(--text-muted);
+            font-size: 4rem;
+            opacity: 0.3;
+            margin-bottom: 1rem;
         }
 
-        /* Spinner simple */
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(139, 69, 19, 0.15);
-            border-radius: 50%;
-            border-top-color: var(--primary-color);
-            animation: spin 0.7s linear infinite;
+        /* Modals */
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .modal-header {
+            background: var(--bg-light);
+            border-bottom: 2px solid var(--border);
+            border-radius: 12px 12px 0 0;
+            padding: 1.25rem 1.5rem;
         }
 
-        /* Sin transiciones complejas */
-        .fade-in {
-            animation: none;
-        }
-
-        /* Títulos simples */
-        h1, h2, h3, h4, h5, h6 {
-            color: var(--text-primary);
+        .modal-title {
             font-weight: 600;
+            color: var(--text-dark);
         }
 
-        h1 { font-size: 1.5rem; }
-        h2 { font-size: 1.3rem; }
-        h3 { font-size: 1.15rem; }
-
-        code {
-            background-color: var(--bg-toolbar);
-            color: var(--text-primary);
-            padding: 0.15rem 0.4rem;
-            border-radius: 2px;
-            font-size: 12px;
-            border: 1px solid var(--border-color);
+        /* Footer */
+        .footer {
+            background: var(--bg-light);
+            color: var(--text-muted);
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
         }
 
-        /* Scrollbar simple */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
+        /* Responsive */
+        @media (max-width: 768px) {
+            .library-hero h1 {
+                font-size: 1.75rem;
+            }
+            
+            .page-header h1 {
+                font-size: 1.5rem;
+            }
         }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-main);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border-dark);
-            border-radius: 2px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary-color);
-        }
-
-        /* Contenedor principal */
-        .container {
-            max-width: 1400px;
-        }
-
-        /* Remover animaciones innecesarias */
-        * {
-            transition: none !important;
-            animation: none !important;
-        }
-
-        .btn, .form-control, .form-select {
-            transition: all 0.1s ease !important;
-        }
+        /* Utility classes */
+        .text-primary { color: var(--primary) !important; }
+        .text-muted { color: var(--text-muted) !important; }
+        .bg-light-custom { background: var(--bg-light) !important; }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
+    <!-- Hero Header -->
+    <div class="library-hero">
+        <div class="container text-center">
+            <i class="bi bi-book-fill" style="font-size: 3rem;"></i>
+            <h1>Sistema de Gestión Bibliotecaria</h1>
+            <p>Administración integral de libros, socios y préstamos</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
             <a class="navbar-brand" href="{% url 'index' %}">
-                <i class="bi bi-book"></i> Sistema de Biblioteca
+                <i class="bi bi-house-door"></i>
+                Biblioteca
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'index' %}">
-                            <i class="bi bi-house"></i> Inicio
-                        </a>
-                    </li>
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'listar_libros' %}">
-                            <i class="bi bi-book-half"></i> Libros
+                            <i class="bi bi-book-half"></i> Catálogo
                         </a>
                     </li>
                     <li class="nav-item">
@@ -432,29 +507,10 @@
                             <i class="bi bi-cash-coin"></i> Multas
                         </a>
                     </li>
-                </ul>
-                                <ul class="navbar-nav">
-                    {% if user.is_authenticated %}
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> {{ user.username }}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'logout' %}" onclick="return confirm('¿Estás segura que querés cerrar sesión?')">
+                            <i class="bi bi-box-arrow-right"></i> Salir
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item" href="/admin/" target="_blank">
-                                    <i class="bi bi-gear"></i> Panel Admin
-                                </a>
-                            </li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="dropdown-item text-danger">
-                                        <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                                    </button>
-                                </form>
-                            </li>
-                        </ul>
                     </li>
                     {% else %}
                     <li class="nav-item">
@@ -468,7 +524,7 @@
         </div>
     </nav>
 
-    <!-- Mensajes -->
+    <!-- Messages -->
     {% if messages %}
     <div class="container mt-3">
         {% for message in messages %}
@@ -480,81 +536,49 @@
     </div>
     {% endif %}
 
-    <!-- Contenido principal -->
-    <div class="container mt-4">
-        {% block content %}
-        {% endblock %}
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
     </div>
 
     <!-- Footer -->
-    <footer class="footer py-4">
-        <div class="container text-center">
+    <footer class="footer">
+        <div class="container">
             <p class="mb-0">
-                <i class="bi bi-book me-2"></i>
-                Sistema de Gestión de Biblioteca - 2do Parcial METII
+                <i class="bi bi-book"></i>
+                Sistema de Biblioteca &copy; 2025 - Gestión Integral
             </p>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Animaciones y mejoras de UX
+        // Auto-hide success alerts
         document.addEventListener('DOMContentLoaded', function() {
-            // Agregar clase fade-in a elementos principales
-            const mainContent = document.querySelector('.container');
-            if (mainContent) {
-                mainContent.classList.add('fade-in');
-            }
-
-            // Mejorar mensajes de alerta
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(alert => {
-                alert.style.animation = 'fadeIn 0.5s ease-in';
-            });
-
-            // Auto-hide alerts después de 5 segundos
             setTimeout(function() {
-                alerts.forEach(alert => {
-                    if (alert.classList.contains('alert-success')) {
-                        const bsAlert = new bootstrap.Alert(alert);
-                        bsAlert.close();
-                    }
+                const successAlerts = document.querySelectorAll('.alert-success');
+                successAlerts.forEach(alert => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
                 });
             }, 5000);
         });
 
-        // Función para mostrar loading en botones
-        function showLoading(button) {
-            const originalText = button.innerHTML;
-            button.innerHTML = '<span class="loading-spinner"></span> Procesando...';
-            button.disabled = true;
-            
-            // Restaurar después de 3 segundos como fallback
-            setTimeout(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-            }, 3000);
-        }
-
-        // Función para búsqueda en tiempo real
+        // Setup search functionality
         function setupSearch(inputId, tableId) {
-            const searchInput = document.getElementById(inputId);
+            const input = document.getElementById(inputId);
             const table = document.getElementById(tableId);
             
-            if (searchInput && table) {
-                searchInput.addEventListener('input', function() {
+            if (input && table) {
+                input.addEventListener('input', function() {
                     const filter = this.value.toLowerCase();
                     const rows = table.getElementsByTagName('tr');
                     
                     for (let i = 1; i < rows.length; i++) {
-                        const row = rows[i];
-                        const text = row.textContent.toLowerCase();
-                        
-                        if (text.includes(filter)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
+                        const text = rows[i].textContent.toLowerCase();
+                        rows[i].style.display = text.includes(filter) ? '' : 'none';
                     }
                 });
             }
@@ -562,3 +586,4 @@
     </script>
 </body>
 </html>
+

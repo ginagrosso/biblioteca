@@ -162,7 +162,7 @@
                                                 <th>Estado</th>
                                                 <th>Fecha Adquisición</th>
                                                 <th>Observaciones</th>
-                                                <th>Acciones</th>
+                                                <th style="min-width: 150px;">Acciones</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -393,6 +393,9 @@
         document.getElementById('ejemplar_codigo_container').style.display = 'none';
         document.getElementById('ejemplar_estado_container').style.display = 'none';
         
+        // Restaurar el required del selector de libro cuando se crea
+        document.getElementById('ejemplar_libro_select').required = true;
+        
         document.getElementById('ejemplar_libro_select').value = isbnPreselect;
         document.getElementById('ejemplar_libro_select').disabled = false;
         document.getElementById('ejemplar_obs').value = '';
@@ -401,12 +404,17 @@
     // Cargar datos del ejemplar para EDITAR
     function cargarEjemplarEnModal(codigo, libroIsbn, estado, obs) {
         document.getElementById('modalEjemplarTitulo').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar Ejemplar';
-        document.getElementById('formEjemplar').action = '/ejemplares/' + codigo + '/editar/';
+        // Construir la URL correctamente
+        const baseUrl = window.location.origin;
+        document.getElementById('formEjemplar').action = baseUrl + '/ejemplares/' + encodeURIComponent(codigo) + '/editar/';
         
         // Ocultar selector de libro, mostrar campos de edición
         document.getElementById('ejemplar_libro_select_container').style.display = 'none';
         document.getElementById('ejemplar_codigo_container').style.display = 'block';
         document.getElementById('ejemplar_estado_container').style.display = 'block';
+        
+        // Quitar el required del selector de libro cuando se edita
+        document.getElementById('ejemplar_libro_select').required = false;
         
         document.getElementById('ejemplar_codigo_display').value = codigo;
         document.getElementById('ejemplar_estado').value = estado;

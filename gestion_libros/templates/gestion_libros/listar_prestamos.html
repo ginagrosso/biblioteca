@@ -14,9 +14,9 @@
                 <p class="mb-0 opacity-75">Controla y gestiona todos los préstamos de la biblioteca</p>
             </div>
             <div class="col-md-4 text-end">
-                <a href="{% url 'realizar_prestamo' %}" class="btn btn-light btn-sm">
+                <button type="button" class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalPrestamo">
                     <i class="bi bi-plus-circle me-1"></i> Nuevo Préstamo
-                </a>
+                </button>
             </div>
         </div>
     </div>
@@ -149,21 +149,76 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if prestamo.esta_activo %}
-                            <a href="{% url 'devolver_libro' prestamo.id %}" 
-                               class="btn btn-sm btn-primary" 
-                               onclick="showLoading(this)">
-                                <i class="bi bi-box-arrow-in-left me-1"></i> Devolver
-                            </a>
-                            {% else %}
-                            <span class="text-muted">—</span>
-                            {% endif %}
+                            <div class="d-flex gap-1">
+                                {% if prestamo.esta_activo %}
+                                <button type="button" class="btn btn-sm btn-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#modalDevolucion{{ prestamo.id }}">
+                                    <i class="bi bi-box-arrow-in-left me-1"></i> Devolver
+                                </button>
+                                {% endif %}
+                                <a href="{% url 'comprobante_prestamo_pdf' prestamo.id %}" 
+                                   class="btn btn-sm btn-outline-secondary"
+                                   target="_blank"
+                                   title="Imprimir comprobante">
+                                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        
+        <!-- Modales de devolución (uno por cada préstamo activo) -->
+        {% for prestamo in prestamos %}
+        {% if prestamo.esta_activo %}
+        <div class="modal fade" id="modalDevolucion{{ prestamo.id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-box-arrow-in-left me-2"></i>Devolver Libro</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form method="post" action="{% url 'devolver_libro' prestamo.id %}">
+                        {% csrf_token %}
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <h6>Información del Préstamo</h6>
+                                <p class="mb-1"><strong>Socio:</strong> {{ prestamo.socio.nombre }}</p>
+                                <p class="mb-1"><strong>Libro:</strong> {{ prestamo.ejemplar.libro.titulo }}</p>
+                                <p class="mb-1"><strong>Ejemplar:</strong> {{ prestamo.ejemplar.codigo_ejemplar }}</p>
+                                {% if prestamo.tiene_retraso %}
+                                <div class="alert alert-warning mt-2">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    <strong>Retraso:</strong> {{ prestamo.dias_retraso }} día{{ prestamo.dias_retraso|pluralize }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Estado Físico del Libro *</label>
+                                <select class="form-select" name="estado_fisico" required>
+                                    <option value="bueno">Bueno (sin daños)</option>
+                                    <option value="dañado">Dañado (requiere mantenimiento)</option>
+                                    <option value="perdido">Perdido</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Observaciones</label>
+                                <textarea class="form-control" name="observaciones" rows="2" placeholder="Opcional..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-primary">Confirmar Devolución</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
         
         <div class="d-flex justify-content-between align-items-center mt-3">
             <div class="text-muted">
@@ -174,9 +229,9 @@
                 {% endif %}
             </div>
             <div>
-                <a href="{% url 'realizar_prestamo' %}" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPrestamo">
                     <i class="bi bi-plus-circle me-2"></i> Realizar Nuevo Préstamo
-                </a>
+                </button>
             </div>
         </div>
         {% else %}
@@ -189,20 +244,75 @@
                 <a href="{% url 'listar_prestamos' %}" class="btn btn-outline-primary">
                     <i class="bi bi-arrow-left me-1"></i> Ver Todos los Préstamos
                 </a>
-                <a href="{% url 'realizar_prestamo' %}" class="btn btn-primary">
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPrestamo">
                     <i class="bi bi-plus-circle me-1"></i> Realizar Préstamo
-                </a>
+                </button>
             </div>
             {% else %}
             <i class="bi bi-arrow-left-right"></i>
             <h4>No hay préstamos registrados</h4>
             <p class="mb-4">Comienza realizando el primer préstamo en tu biblioteca</p>
-            <a href="{% url 'realizar_prestamo' %}" class="btn btn-primary">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalPrestamo">
                 <i class="bi bi-plus-circle me-2"></i> Realizar Primer Préstamo
-            </a>
+            </button>
             {% endif %}
         </div>
         {% endif %}
+    </div>
+</div>
+
+<!-- Modal Nuevo Préstamo -->
+<div class="modal fade" id="modalPrestamo" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Nuevo Préstamo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'realizar_prestamo' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Socio *</label>
+                        <select class="form-select" name="socio_id" required>
+                            <option value="">-- Seleccione un socio --</option>
+                            {% for socio in socios %}
+                            <option value="{{ socio.dni }}">
+                                {{ socio.nombre }} (DNI: {{ socio.dni }} - Nº: {{ socio.numero_socio }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if not socios %}
+                        <small class="text-warning">No hay socios activos</small>
+                        {% endif %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Ejemplar Disponible *</label>
+                        <select class="form-select" name="ejemplar_id" required>
+                            <option value="">-- Seleccione un ejemplar --</option>
+                            {% for ejemplar in ejemplares %}
+                            <option value="{{ ejemplar.codigo_ejemplar }}">
+                                {{ ejemplar.libro.titulo }} - {{ ejemplar.libro.autor }} ({{ ejemplar.codigo_ejemplar }})
+                            </option>
+                            {% endfor %}
+                        </select>
+                        {% if not ejemplares %}
+                        <small class="text-warning">No hay ejemplares disponibles</small>
+                        {% endif %}
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-1"></i>
+                        El préstamo se registrará con fecha de hoy y devolución en 15 días.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" {% if not socios or not ejemplares %}disabled{% endif %}>
+                        Confirmar Préstamo
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

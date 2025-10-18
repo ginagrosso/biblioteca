@@ -19,6 +19,8 @@ from .views import (
     dar_baja_ejemplar,
     listar_multas,
     pagar_multa,
+    generar_comprobante_multa,
+    generar_comprobante_prestamo,
 )
 
 urlpatterns = [
@@ -50,4 +52,8 @@ urlpatterns = [
     
     # PROCESO 4: Gestión de multas
     path('multas/<int:multa_id>/pagar/', pagar_multa, name='pagar_multa'),
+    
+    # PDFs/Comprobantes
+    path('multas/<int:multa_id>/pdf/', generar_comprobante_multa, name='comprobante_multa_pdf'),
+    path('prestamos/<int:prestamo_id>/pdf/', generar_comprobante_prestamo, name='comprobante_prestamo_pdf'),
 ]

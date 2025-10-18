@@ -129,18 +129,24 @@
                             {% endif %}
                         </td>
                         <td>
-                            {% if not multa.pagada %}
-                            <form method="POST" action="{% url 'pagar_multa' multa.id %}" style="display: inline;">
-                                {% csrf_token %}
-                                <button type="submit" 
-                                        class="btn btn-sm btn-primary"
-                                        onclick="return confirm('¿Confirmar pago de ${{ multa.monto }}?')">
-                                    <i class="bi bi-cash-coin me-1"></i> Pagar
-                                </button>
-                            </form>
-                            {% else %}
-                            <span class="text-muted">—</span>
-                            {% endif %}
+                            <div class="d-flex gap-1">
+                                {% if not multa.pagada %}
+                                <form method="POST" action="{% url 'pagar_multa' multa.id %}" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-sm btn-primary"
+                                            onclick="return confirm('¿Confirmar pago de ${{ multa.monto }}?')">
+                                        <i class="bi bi-cash-coin me-1"></i> Pagar
+                                    </button>
+                                </form>
+                                {% endif %}
+                                <a href="{% url 'comprobante_multa_pdf' multa.id %}" 
+                                   class="btn btn-sm btn-outline-secondary"
+                                   target="_blank"
+                                   title="Imprimir comprobante">
+                                    <i class="bi bi-file-earmark-pdf"></i> PDF
+                                </a>
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
