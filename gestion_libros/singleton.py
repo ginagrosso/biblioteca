@@ -17,7 +17,7 @@ class ConfiguracionBiblioteca:
             self.tasa_multa_diaria_sugerida = 0.50  # Sugerencia: $0.50 por día de retraso
             self.dias_prestamo_default = 15  # 15 días de préstamo por defecto
             self.max_prestamos_simultaneos = 3  # Máximo de préstamos activos por socio
-            # NOTA: Los montos de multas por daño/pérdida ahora los ingresa el bibliotecario dinámicamente
+            # NOTA: Los montos de multas por daño/pérdida los ingresa el bibliotecario dinámicamente
             ConfiguracionBiblioteca._inicializado = True
     
     def calcular_multa_retraso(self, dias_retraso):
