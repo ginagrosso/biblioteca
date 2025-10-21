@@ -68,11 +68,11 @@
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card text-center h-100" style="border: 1px solid {% if multas_pendientes > 0 %}#E06055{% else %}var(--border){% endif %}; background: var(--bg-white); transition: all 0.2s;">
+            <div class="card text-center h-100 card-multas-stat {% if multas_pendientes > 0 %}border-danger{% endif %}">
                 <div class="card-body p-3">
-                    <i class="bi bi-cash-coin" style="font-size: 2.5rem; color: {% if multas_pendientes > 0 %}#E06055{% else %}var(--text-muted){% endif %};"></i>
+                    <i class="bi bi-cash-coin icon-multas-stat {% if multas_pendientes > 0 %}text-danger{% else %}text-muted{% endif %}"></i>
                     <h2 class="mb-0 mt-2" style="font-weight: 600;">{{ multas_pendientes }}</h2>
-                    <small class="text-muted">Multas{% if multas_pendientes > 0 %} <span style="color: #E06055; font-weight: 600;">${{ monto_multas_pendientes }}</span>{% endif %}</small>
+                    <small class="text-muted">Multas{% if multas_pendientes > 0 %} <span class="text-danger fw-bold">${{ monto_multas_pendientes }}</span>{% endif %}</small>
                 </div>
             </div>
         </div>
@@ -134,6 +134,14 @@
         transform: translateY(-5px);
         box-shadow: 0 8px 20px rgba(0,0,0,0.12);
         border-color: var(--primary) !important;
+    }
+    .card-multas-stat {
+        border: 1px solid var(--border);
+        background: var(--bg-white);
+        transition: all 0.2s;
+    }
+    .icon-multas-stat {
+        font-size: 2.5rem;
     }
 </style>
 {% endblock %}

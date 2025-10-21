@@ -24,6 +24,15 @@ def registrar_libro(request):
         messages.error(request, '❌ ISBN, título y autor son obligatorios.')
         return redirect('listar_libros')
     
+    # Validar formato del ISBN
+    if len(isbn) < 10 or len(isbn) > 13:
+        messages.error(request, '❌ El ISBN debe tener entre 10 y 13 dígitos.')
+        return redirect('listar_libros')
+    
+    if not isbn.isdigit():
+        messages.error(request, '❌ El ISBN debe contener solo números.')
+        return redirect('listar_libros')
+    
     # Validar que el ISBN no exista (solo al crear)
     if Libro.objects.filter(isbn=isbn).exists():
         messages.error(request, f'❌ El ISBN {isbn} ya está registrado.')

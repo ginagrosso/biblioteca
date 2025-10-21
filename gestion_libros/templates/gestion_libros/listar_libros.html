@@ -285,8 +285,8 @@
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">ISBN *</label>
-                        <input type="text" class="form-control" name="isbn" id="libro_isbn" required>
-                        <small class="text-muted">Código único del libro</small>
+                        <input type="text" class="form-control" name="isbn" id="libro_isbn" required maxlength="13" pattern="[0-9]{10,13}" title="ISBN debe tener entre 10 y 13 dígitos numéricos">
+                        <small class="text-muted">Código único del libro (10 o 13 dígitos)</small>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Título *</label>
